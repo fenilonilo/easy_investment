@@ -12,4 +12,9 @@ class ApiEndpoints {
   static const String watchlist = '/profile/watchlist';
   static const String watchlistAdd = '/profile/watchlist/add';
   static const String watchlistRemove = '/profile/watchlist/remove';
+  static const String aiChat = '/ai/chat';
+  static const String aiChatStream = '/ai/chat/stream';
+  static const String aiSessions = '/ai/sessions';
+  static String aiSession(String id) => '/ai/sessions/$id';
+  static String aiSessionSummary(String id) => '/ai/sessions/$id/summary';
 }

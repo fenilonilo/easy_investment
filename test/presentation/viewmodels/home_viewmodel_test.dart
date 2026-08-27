@@ -48,41 +48,51 @@ void main() {
   }
 
   group('HomeNotifier', () {
-    test('load with empty watchlist sets quotes=[] and loading=false', () async {
-      when(() => mockWatchlist.getWatchlist()).thenAnswer((_) async => []);
+    test(
+      'load with empty watchlist sets quotes=[] and loading=false',
+      () async {
+        when(() => mockWatchlist.getWatchlist()).thenAnswer((_) async => []);
 
-      final container = buildContainer();
-      await container.read(homeNotifierProvider.notifier).load();
+        final container = buildContainer();
+        await container.read(homeNotifierProvider.notifier).load();
 
-      final state = container.read(homeNotifierProvider);
-      expect(state.quotes, isEmpty);
-      expect(state.loading, false);
-    });
+        final state = container.read(homeNotifierProvider);
+        expect(state.quotes, isEmpty);
+        expect(state.loading, false);
+      },
+    );
 
-    test('load with 1 asset sets quotes with 1 item and loading=false', () async {
-      const asset = AssetModel(ticker: 'AAPL', name: 'Apple', iconUrl: '');
-      const quote = AssetQuoteModel(
-        ticker: 'AAPL',
-        name: 'Apple',
-        iconUrl: '',
-        priceUsd: 150.0,
-        direction: 'subindo',
-      );
+    test(
+      'load with 1 asset sets quotes with 1 item and loading=false',
+      () async {
+        const asset = AssetModel(ticker: 'AAPL', name: 'Apple', iconUrl: '');
+        const quote = AssetQuoteModel(
+          ticker: 'AAPL',
+          name: 'Apple',
+          iconUrl: '',
+          priceUsd: 150.0,
+          direction: 'subindo',
+        );
 
-      when(() => mockWatchlist.getWatchlist()).thenAnswer((_) async => [asset]);
-      when(() => mockAssets.getQuote(any())).thenAnswer((_) async => quote);
-      when(() => mockAssets.getHistory(any(), any())).thenAnswer((_) async => []);
-      when(() => mockAssets.getNews(any())).thenAnswer((_) async => []);
+        when(
+          () => mockWatchlist.getWatchlist(),
+        ).thenAnswer((_) async => [asset]);
+        when(() => mockAssets.getQuote(any())).thenAnswer((_) async => quote);
+        when(
+          () => mockAssets.getHistory(any(), any()),
+        ).thenAnswer((_) async => []);
+        when(() => mockAssets.getNews(any())).thenAnswer((_) async => []);
 
-      final container = buildContainer();
-      await container.read(homeNotifierProvider.notifier).load();
-      await Future.delayed(Duration.zero);
+        final container = buildContainer();
+        await container.read(homeNotifierProvider.notifier).load();
+        await Future.delayed(Duration.zero);
 
-      final state = container.read(homeNotifierProvider);
-      expect(state.quotes.length, 1);
-      expect(state.quotes.first.ticker, 'AAPL');
-      expect(state.loading, false);
-    });
+        final state = container.read(homeNotifierProvider);
+        expect(state.quotes.length, 1);
+        expect(state.quotes.first.ticker, 'AAPL');
+        expect(state.loading, false);
+      },
+    );
 
     test('setPeriod updates selectedPeriod and refetches history', () async {
       const asset = AssetModel(ticker: 'AAPL', name: 'Apple', iconUrl: '');
@@ -96,7 +106,9 @@ void main() {
 
       when(() => mockWatchlist.getWatchlist()).thenAnswer((_) async => [asset]);
       when(() => mockAssets.getQuote(any())).thenAnswer((_) async => quote);
-      when(() => mockAssets.getHistory(any(), any())).thenAnswer((_) async => []);
+      when(
+        () => mockAssets.getHistory(any(), any()),
+      ).thenAnswer((_) async => []);
       when(() => mockAssets.getNews(any())).thenAnswer((_) async => []);
 
       final container = buildContainer();
@@ -126,10 +138,14 @@ void main() {
         direction: 'subindo',
       );
 
-      when(() => mockWatchlist.getWatchlist()).thenAnswer((_) async => [asset1, asset2]);
+      when(
+        () => mockWatchlist.getWatchlist(),
+      ).thenAnswer((_) async => [asset1, asset2]);
       when(() => mockAssets.getQuote('AAPL')).thenAnswer((_) async => quote1);
       when(() => mockAssets.getQuote('GOOG')).thenAnswer((_) async => quote2);
-      when(() => mockAssets.getHistory(any(), any())).thenAnswer((_) async => []);
+      when(
+        () => mockAssets.getHistory(any(), any()),
+      ).thenAnswer((_) async => []);
       when(() => mockAssets.getNews(any())).thenAnswer((_) async => []);
 
       final container = buildContainer();
@@ -146,15 +162,37 @@ void main() {
       const asset1 = AssetModel(ticker: 'AAPL', name: 'Apple', iconUrl: '');
       const asset2 = AssetModel(ticker: 'GOOG', name: 'Google', iconUrl: '');
       const asset3 = AssetModel(ticker: 'MSFT', name: 'Microsoft', iconUrl: '');
-      const quote1 = AssetQuoteModel(ticker: 'AAPL', name: 'Apple', iconUrl: '', priceUsd: 150.0, direction: 'subindo');
-      const quote2 = AssetQuoteModel(ticker: 'GOOG', name: 'Google', iconUrl: '', priceUsd: 2800.0, direction: 'subindo');
-      const quote3 = AssetQuoteModel(ticker: 'MSFT', name: 'Microsoft', iconUrl: '', priceUsd: 300.0, direction: 'subindo');
+      const quote1 = AssetQuoteModel(
+        ticker: 'AAPL',
+        name: 'Apple',
+        iconUrl: '',
+        priceUsd: 150.0,
+        direction: 'subindo',
+      );
+      const quote2 = AssetQuoteModel(
+        ticker: 'GOOG',
+        name: 'Google',
+        iconUrl: '',
+        priceUsd: 2800.0,
+        direction: 'subindo',
+      );
+      const quote3 = AssetQuoteModel(
+        ticker: 'MSFT',
+        name: 'Microsoft',
+        iconUrl: '',
+        priceUsd: 300.0,
+        direction: 'subindo',
+      );
 
-      when(() => mockWatchlist.getWatchlist()).thenAnswer((_) async => [asset1, asset2, asset3]);
+      when(
+        () => mockWatchlist.getWatchlist(),
+      ).thenAnswer((_) async => [asset1, asset2, asset3]);
       when(() => mockAssets.getQuote('AAPL')).thenAnswer((_) async => quote1);
       when(() => mockAssets.getQuote('GOOG')).thenAnswer((_) async => quote2);
       when(() => mockAssets.getQuote('MSFT')).thenAnswer((_) async => quote3);
-      when(() => mockAssets.getHistory(any(), any())).thenAnswer((_) async => []);
+      when(
+        () => mockAssets.getHistory(any(), any()),
+      ).thenAnswer((_) async => []);
       when(() => mockAssets.getNews(any())).thenAnswer((_) async => []);
 
       final container = buildContainer();
@@ -169,7 +207,9 @@ void main() {
     });
 
     test('load error sets error message', () async {
-      when(() => mockWatchlist.getWatchlist()).thenThrow(Exception('network error'));
+      when(
+        () => mockWatchlist.getWatchlist(),
+      ).thenThrow(Exception('network error'));
 
       final container = buildContainer();
       await container.read(homeNotifierProvider.notifier).load();
