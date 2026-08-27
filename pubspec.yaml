@@ -25,6 +25,9 @@ dependencies:
   intl: ^0.20.2
   shared_preferences: ^2.3.3
   flutter_markdown: ^0.7.4
+  # Import direto: MarkdownBody precisa de md.ExtensionSet.gitHubWeb
+  # para renderizar as tabelas que o agente devolve.
+  markdown: ^7.2.2
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
 

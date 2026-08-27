@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Finance Pro — Especificação Técnica</title>
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 18mm 18mm 18mm;
+    @bottom-center { content: counter(page); }
+  }
+
+  :root {
+    --ink:        #14171a;
+    --ink-soft:   #4a5158;
+    --ink-faint:  #767f88;
+    --rule:       #d9dee3;
+    --rule-soft:  #eaeef1;
+    --accent:     #00791f;
+    --accent-bg:  #f0f8f2;
+    --code-bg:    #f6f7f9;
+    --warn-bg:    #fff8e6;
+    --warn-rule:  #e0a800;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { font-size: 10.5pt; }
+
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    line-height: 1.55;
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ─── Capa ─────────────────────────────────────────── */
+  .cover {
+    height: 247mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    page-break-after: always;
+  }
+  .cover .mark {
+    width: 54px; height: 54px;
+    background: var(--accent);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 26px; font-weight: 700;
+    margin-bottom: 34px;
+  }
+  .cover .eyebrow {
+    font-size: 9.5pt; letter-spacing: 2.2px; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 12px;
+  }
+  .cover h1 {
+    font-size: 34pt; line-height: 1.1; margin: 0 0 10px;
+    letter-spacing: -1.1px; font-weight: 700;
+  }
+  .cover .sub {
+    font-size: 13pt; color: var(--ink-soft); margin: 0 0 44px;
+    max-width: 118mm; line-height: 1.45;
+  }
+  .cover .meta {
+    border-top: 2px solid var(--ink);
+    padding-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    max-width: 160mm;
+  }
+  .cover .meta dt {
+    font-size: 7.5pt; letter-spacing: 1.1px; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 700; margin-bottom: 3px;
+  }
+  .cover .meta dd { margin: 0; font-size: 10pt; font-weight: 600; }
+
+  /* ─── Tipografia ───────────────────────────────────── */
+  h2 {
+    font-size: 17pt; margin: 0 0 4px; letter-spacing: -0.4px;
+    padding-top: 4px;
+  }
+  h2 .num {
+    color: var(--accent); font-weight: 700; margin-right: 10px;
+  }
+  .h2rule { border-bottom: 2px solid var(--ink); margin-bottom: 18px; padding-bottom: 8px; }
+
+  h3 {
+    font-size: 12pt; margin: 22px 0 7px; letter-spacing: -0.2px;
+    color: var(--ink);
+  }
+  h4 {
+    font-size: 10pt; margin: 16px 0 5px; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.9px;
+  }
+
+  p { margin: 0 0 10px; text-align: justify; }
+  ul, ol { margin: 0 0 11px; padding-left: 19px; }
+  li { margin-bottom: 4px; }
+
+  section { page-break-inside: auto; }
+  .section { page-break-before: always; }
+
+  code, .mono {
+    font-family: "Cascadia Mono", "Consolas", "SF Mono", monospace;
+    font-size: 0.87em;
+  }
+  p code, li code, td code {
+    background: var(--code-bg);
+    padding: 1px 5px; border-radius: 3px;
+    border: 1px solid var(--rule-soft);
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 11px 13px;
+    font-family: "Cascadia Mono", "Consolas", monospace;
+    font-size: 8.2pt;
+    line-height: 1.5;
+    overflow-x: auto;
+    margin: 0 0 13px;
+    page-break-inside: avoid;
+    white-space: pre;
+  }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 0 0 14px;
+    font-size: 9pt; page-break-inside: avoid;
+  }
+  th {
+    text-align: left; background: var(--ink); color: #fff;
+    padding: 7px 9px; font-size: 8pt; letter-spacing: 0.7px;
+    text-transform: uppercase; font-weight: 700;
+  }
+  td { padding: 6px 9px; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  tbody tr:nth-child(even) { background: #fafbfc; }
+  td.mono, th.mono { font-family: "Cascadia Mono", Consolas, monospace; font-size: 8.3pt; }
+
+  .callout {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px; margin: 0 0 14px; border-radius: 0 4px 4px 0;
+    font-size: 9.5pt; page-break-inside: avoid;
+  }
+  .callout.warn { background: var(--warn-bg); border-left-color: var(--warn-rule); }
+  .callout strong { display: block; margin-bottom: 3px; }
+
+  .lead {
+    font-size: 11pt; color: var(--ink-soft); margin-bottom: 18px;
+    border-left: 2px solid var(--rule); padding-left: 14px;
+  }
+
+  /* ─── Sumário ──────────────────────────────────────── */
+  .toc { columns: 2; column-gap: 26px; font-size: 9.5pt; }
+  .toc div { break-inside: avoid; margin-bottom: 5px; }
+  .toc .n { color: var(--accent); font-weight: 700; display: inline-block; width: 22px; }
+
+  /* ─── Diagrama ASCII ───────────────────────────────── */
+  .diagram {
+    background: #fff; border: 1px solid var(--rule);
+    border-radius: 5px; padding: 14px;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 7.6pt; line-height: 1.42; white-space: pre;
+    page-break-inside: avoid; margin-bottom: 14px;
+    overflow-x: auto;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .badge {
+    display: inline-block; font-size: 7.5pt; font-weight: 700;
+    padding: 1px 7px; border-radius: 9px; letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .badge.ok   { background: #e3f4e7; color: #14682a; }
+  .badge.part { background: #fdf1d8; color: #8a5b00; }
+  .badge.no   { background: #fbe4e2; color: #9b2318; }
+
+  .kpi {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 18px;
+  }
+  .kpi div {
+    border: 1px solid var(--rule); border-top: 3px solid var(--accent);
+    border-radius: 4px; padding: 10px 12px;
+  }
+  .kpi .v { font-size: 18pt; font-weight: 700; line-height: 1.1; letter-spacing: -0.8px; }
+  .kpi .k { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-faint); font-weight: 700; margin-top: 2px; }
+
+  footer.docfoot {
+    margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--rule);
+    font-size: 8.5pt; color: var(--ink-faint);
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ CAPA ══════════════════════════ -->
+<div class="cover">
+  <div class="mark">↗</div>
+  <div class="eyebrow">Documento de Especificação Técnica</div>
+  <h1>Finance&nbsp;Pro</h1>
+  <p class="sub">Aplicativo multiplataforma de monitoramento de ativos financeiros — arquitetura, decisões técnicas e contratos de integração.</p>
+  <dl class="meta">
+    <div><dt>Projeto</dt><dd>easy_finance</dd></div>
+    <div><dt>Versão</dt><dd>1.0.0+1</dd></div>
+    <div><dt>Plataforma</dt><dd>Flutter 3.41 / Dart 3.11</dd></div>
+    <div><dt>Data</dt><dd>13/08/2026</dd></div>
+  </dl>
+</div>
+
+<!-- ══════════════════════════ SUMÁRIO ══════════════════════════ -->
+<section>
+  <h2><span class="num">—</span>Sumário</h2>
+  <div class="h2rule"></div>
+  <div class="toc">
+    <div><span class="n">1</span> Visão Geral do Produto</div>
+    <div><span class="n">2</span> Stack Tecnológica</div>
+    <div><span class="n">3</span> Arquitetura do Sistema</div>
+    <div><span class="n">4</span> Estrutura de Diretórios</div>
+    <div><span class="n">5</span> Camada de Domínio</div>
+    <div><span class="n">6</span> Camada de Dados</div>
+    <div><span class="n">7</span> Camada de Apresentação</div>
+    <div><span class="n">8</span> Gerenciamento de Estado</div>
+    <div><span class="n">9</span> Navegação e Roteamento</div>
+    <div><span class="n">10</span> Autenticação e Segurança</div>
+    <div><span class="n">11</span> Contrato da API</div>
+    <div><span class="n">12</span> Persistência Local</div>
+    <div><span class="n">13</span> Design System e Temas</div>
+    <div><span class="n">14</span> Internacionalização</div>
+    <div><span class="n">15</span> Estratégia de Testes</div>
+    <div><span class="n">16</span> Registro de Decisões Técnicas</div>
+    <div><span class="n">17</span> Build, Configuração e Distribuição</div>
+    <div><span class="n">18</span> Limitações Conhecidas e Roadmap</div>
+  </div>
+
+  <h3>Escopo deste documento</h3>
+  <p>Este documento descreve a arquitetura, as decisões técnicas e os contratos de integração da aplicação cliente <strong>Finance Pro</strong>. Ele cobre exclusivamente o aplicativo Flutter; o serviço de backend HTTP consumido pela aplicação é tratado como sistema externo, documentado aqui apenas pela ótica do contrato consumido (seção 11).</p>
+
+  <h3>Público-alvo</h3>
+  <p>Engenheiros de software responsáveis pela manutenção e evolução do cliente, revisores técnicos e responsáveis pela integração com o backend.</p>
+
+  <h3>Métricas do código-fonte</h3>
+  <div class="kpi">
+    <div><div class="v">~3.900</div><div class="k">Linhas Dart autorais</div></div>
+    <div><div class="v">93</div><div class="k">Casos de teste</div></div>
+    <div><div class="v">8</div><div class="k">Modelos de dados</div></div>
+    <div><div class="v">6</div><div class="k">Plataformas-alvo</div></div>
+  </div>
+  <p style="font-size:9pt;color:var(--ink-faint)">Contagem de linhas exclui código gerado (<code>*.freezed.dart</code>, <code>*.g.dart</code>, <code>app_localizations*.dart</code>), que soma volume adicional relevante mas não é mantido manualmente.</p>
+</section>
+
+<!-- ══════════════════════════ 1 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">01</span>Visão Geral do Produto</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">Finance Pro é um aplicativo de acompanhamento de carteira de observação (<em>watchlist</em>) de ativos financeiros — ações, ETFs e criptomoedas — com cotações, séries históricas, notícias agregadas e um assistente conversacional.</p>
+
+  <h3>1.1 Funcionalidades</h3>
+  <table>
+    <thead><tr><th style="width:26%">Módulo</th><th>Descrição funcional</th><th style="width:15%">Situação</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Autenticação</strong></td><td>Cadastro de usuário com perfil de investidor, login por e-mail/senha via OAuth2 <em>password grant</em>, sessão persistida e logout com limpeza de credenciais.</td><td><span class="badge ok">Integrado</span></td></tr>
+      <tr><td><strong>Início (Home)</strong></td><td>Watchlist com cotação e direção de variação por ativo, reordenação por arrastar-e-soltar, gráficos históricos com seletor de período (1D/1W/1M/1Y/ALL), carrossel automático de notícias e <em>pull-to-refresh</em>.</td><td><span class="badge ok">Integrado</span></td></tr>
+      <tr><td><strong>Perfil</strong></td><td>Exibição e edição dos dados do usuário, busca de ativos com <em>debounce</em>, seleção por chips e sincronização diferencial da watchlist.</td><td><span class="badge ok">Integrado</span></td></tr>
+      <tr><td><strong>Assistente (IA Chat)</strong></td><td>Interface conversacional com renderização Markdown, indicador de digitação e respostas contextuais sobre conceitos de investimento.</td><td><span class="badge part">Mock local</span></td></tr>
+      <tr><td><strong>Configurações</strong></td><td>Alternância de tema claro/escuro, seleção de idioma (PT-BR / EN-US), informações de versão e encerramento de sessão com confirmação.</td><td><span class="badge ok">Integrado</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>1.2 Plataformas suportadas</h3>
+  <p>O projeto mantém <em>runners</em> nativos para <strong>Android</strong> (<code>com.example.easy_finance</code>), <strong>iOS</strong> (deployment target 13.0), <strong>Web</strong>, <strong>Windows</strong>, <strong>macOS</strong> e <strong>Linux</strong>. O foco de produto e de validação de UX é mobile; os demais alvos são funcionais por consequência do <em>toolkit</em>, e não receberam ajuste específico de layout responsivo.</p>
+
+  <h3>1.3 Premissas do domínio</h3>
+  <ul>
+    <li>Todos os preços são expressos e formatados em <strong>dólar norte-americano</strong> (<code>price_usd</code>, <code>NumberFormat.simpleCurrency(locale: 'en_US')</code>).</li>
+    <li>A direção do movimento do ativo é fornecida pelo backend como <em>string</em> de domínio em português (<code>"subindo"</code> / demais valores) e não é derivada no cliente a partir da série histórica.</li>
+    <li>Tickers seguem a nomenclatura do provedor de mercado a montante (ex.: <code>AAPL</code>, <code>BTC-USD</code>), sem normalização no cliente.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════ 2 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">02</span>Stack Tecnológica</h2>
+  <div class="h2rule"></div>
+
+  <h3>2.1 Plataforma base</h3>
+  <table>
+    <thead><tr><th style="width:28%">Componente</th><th style="width:20%">Versão</th><th>Papel</th></tr></thead>
+    <tbody>
+      <tr><td>Flutter SDK</td><td class="mono">3.41.1 (stable)</td><td>Framework de UI e camada de renderização multiplataforma.</td></tr>
+      <tr><td>Dart SDK</td><td class="mono">^3.11.0</td><td>Linguagem; restrição declarada em <code>pubspec.yaml</code>.</td></tr>
+      <tr><td>Material 3</td><td class="mono">useMaterial3: true</td><td>Sistema de componentes base sobre o qual o tema próprio é construído.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 Dependências de produção</h3>
+  <table>
+    <thead><tr><th style="width:27%">Pacote</th><th style="width:14%">Versão</th><th>Justificativa de adoção</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">flutter_riverpod</td><td class="mono">^2.5.1</td><td>Injeção de dependência e gerência de estado reativa com escopo compilado e testabilidade por sobrescrita de provider.</td></tr>
+      <tr><td class="mono">riverpod_annotation</td><td class="mono">^2.6.1</td><td>Anotações para geração de providers; disponível para adoção incremental.</td></tr>
+      <tr><td class="mono">dio</td><td class="mono">^5.7.0</td><td>Cliente HTTP com suporte a interceptadores, essencial para injeção de token e tratamento centralizado de 401.</td></tr>
+      <tr><td class="mono">flutter_secure_storage</td><td class="mono">^9.2.2</td><td>Armazenamento de credenciais no Keychain (iOS) / EncryptedSharedPreferences (Android).</td></tr>
+      <tr><td class="mono">go_router</td><td class="mono">^14.6.0</td><td>Roteamento declarativo com suporte nativo a <em>redirect</em> assíncrono e shell de navegação com estado preservado.</td></tr>
+      <tr><td class="mono">fl_chart</td><td class="mono">^0.69.0</td><td>Renderização dos gráficos de linha das séries históricas.</td></tr>
+      <tr><td class="mono">cached_network_image</td><td class="mono">^3.4.1</td><td>Cache em disco dos ícones de ativos, reduzindo requisições repetidas.</td></tr>
+      <tr><td class="mono">shimmer</td><td class="mono">^3.0.0</td><td>Estados de carregamento por <em>skeleton</em>, evitando deslocamento de layout.</td></tr>
+      <tr><td class="mono">intl</td><td class="mono">^0.20.2</td><td>Formatação de moeda e datas sensível a <em>locale</em>.</td></tr>
+      <tr><td class="mono">shared_preferences</td><td class="mono">^2.3.3</td><td>Persistência de preferências não sensíveis (tema, idioma, ordem da watchlist).</td></tr>
+      <tr><td class="mono">flutter_markdown</td><td class="mono">^0.7.4</td><td>Renderização das respostas do assistente, que utilizam Markdown (negrito, listas, tabelas).</td></tr>
+      <tr><td class="mono">freezed_annotation</td><td class="mono">^2.4.4</td><td>Contrato para modelos imutáveis com <code>copyWith</code> e igualdade estrutural.</td></tr>
+      <tr><td class="mono">json_annotation</td><td class="mono">^4.9.0</td><td>Contrato de serialização JSON.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.3 Dependências de desenvolvimento</h3>
+  <table>
+    <thead><tr><th style="width:27%">Pacote</th><th style="width:14%">Versão</th><th>Papel</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">build_runner</td><td class="mono">^2.4.13</td><td>Orquestrador da geração de código.</td></tr>
+      <tr><td class="mono">freezed</td><td class="mono">^2.5.7</td><td>Geração das <em>data classes</em> imutáveis.</td></tr>
+      <tr><td class="mono">json_serializable</td><td class="mono">^6.9.0</td><td>Geração de <code>fromJson</code>/<code>toJson</code>.</td></tr>
+      <tr><td class="mono">riverpod_generator</td><td class="mono">^2.6.3</td><td>Geração de providers anotados.</td></tr>
+      <tr><td class="mono">mocktail</td><td class="mono">^1.0.4</td><td>Dublês de teste sem geração de código, permitindo <em>mocks</em> de interfaces do domínio.</td></tr>
+      <tr><td class="mono">flutter_lints</td><td class="mono">^6.0.0</td><td>Conjunto de regras de análise estática.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.4 Configuração do analisador</h3>
+  <p>O arquivo <code>analysis_options.yaml</code> estende <code>package:flutter_lints/flutter.yaml</code> e suprime duas regras cujos disparos são falsos positivos originados por geração de código:</p>
+  <pre>analyzer:
+  errors:
+    invalid_annotation_target: ignore   # @JsonKey em parâmetros de factory (freezed 2.x)
+    unnecessary_underscores: ignore     # gerado por code gen</pre>
+  <p>A supressão é declarada no nível do projeto, e não por <code>// ignore:</code> espalhado nos arquivos, mantendo os arquivos-fonte livres de ruído. Essa escolha tem o custo de também silenciar eventuais ocorrências legítimas em código autoral.</p>
+</section>
+
+<!-- ══════════════════════════ 3 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">03</span>Arquitetura do Sistema</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">O sistema adota <strong>Clean Architecture em três camadas</strong> combinada ao padrão <strong>MVVM</strong> na camada de apresentação, com inversão de dependência mediada por interfaces de repositório e resolução via Riverpod.</p>
+
+  <h3>3.1 Diagrama de camadas</h3>
+  <div class="diagram">┌──────────────────────────────────────────────────────────────────────────┐
+│  PRESENTATION                                                            │
+│                                                                          │
+│   Views (Widgets)              ViewModels (StateNotifier)                │
+│   ─────────────────            ────────────────────────────              │
+│   LoginView                    AuthNotifier      → AuthState             │
+│   RegisterView                 HomeNotifier      → HomeState             │
+│   HomeView                     ProfileNotifier   → ProfileState          │
+│   ProfileView         watch    ChatNotifier      → ChatState             │
+│   ChatView          ◄────────                                            │
+│   ConfigView          read →                                             │
+│   SplashView                                                             │
+└───────────────────────────────────┬──────────────────────────────────────┘
+                                    │  depende de abstrações
+                                    ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│  DOMAIN  (puro Dart — sem Flutter, sem Dio)                              │
+│                                                                          │
+│   abstract class AuthRepository        abstract class AssetRepository    │
+│   abstract class WatchlistRepository   abstract class ChatRepository     │
+└───────────────────────────────────▲──────────────────────────────────────┘
+                                    │  implementado por
+                                    │
+┌───────────────────────────────────┴──────────────────────────────────────┐
+│  DATA                                                                    │
+│                                                                          │
+│   Repositories Impl        Models (freezed)        DataSources           │
+│   ─────────────────        ────────────────        ───────────────       │
+│   AuthRepositoryImpl       AssetModel              DioClient             │
+│   AssetRepositoryImpl      AssetQuoteModel         AuthInterceptor       │
+│   WatchlistRepositoryImpl  UserModel               SecureStorageService  │
+│   MockChatRepository       AuthTokenModel          UserStorageService    │
+│                            HistoryPointModel       ApiEndpoints          │
+│                            NewsItemModel                                 │
+│                            DividendModel                                 │
+│                            FinancialsModel                               │
+└───────────────────────────────────┬──────────────────────────────────────┘
+                                    ▼
+                     ┌───────────────────────────────┐
+                     │  Backend HTTP  ·  REST/JSON   │
+                     │  SharedPreferences · Keychain │
+                     └───────────────────────────────┘</div>
+
+  <h3>3.2 Regra de dependência</h3>
+  <p>As dependências apontam sempre para dentro. A camada de apresentação conhece apenas as abstrações declaradas em <code>lib/domain/repositories/</code>; nenhuma <em>view</em> ou <em>view model</em> importa <code>package:dio</code>. A resolução da implementação concreta ocorre em tempo de execução, através dos providers declarados junto de cada implementação:</p>
+  <pre>// lib/data/repositories/asset_repository_impl.dart
+final assetRepositoryProvider = Provider&lt;AssetRepository&gt;((ref) =&gt;
+    AssetRepositoryImpl(ref.read(dioClientProvider)));</pre>
+  <p>O tipo exposto pelo provider é a <strong>abstração</strong> (<code>Provider&lt;AssetRepository&gt;</code>), não a implementação. Isso permite substituir a implementação em testes por <code>overrideWithValue</code> sem qualquer alteração no código de produção.</p>
+
+  <div class="callout">
+    <strong>Desvio consciente do modelo canônico</strong>
+    Os modelos de dados residem em <code>lib/data/models/</code> e são referenciados diretamente pelas interfaces do domínio, em vez de existirem entidades de domínio separadas com mapeadores. A duplicação model↔entity foi considerada desproporcional para um cliente cujo modelo de leitura espelha o contrato da API. O custo dessa escolha é que uma mudança de <em>schema</em> no backend propaga até a camada de apresentação sem barreira intermediária.
+  </div>
+
+  <h3>3.3 Fluxo de uma requisição</h3>
+  <p>Exemplo completo — carregamento da tela inicial:</p>
+  <div class="diagram">HomeView.build()
+   │
+   ├─ ref.watch(homeNotifierProvider) ────────► reconstrói ao mudar HomeState
+   │
+   └─ HomeNotifier() [construtor] → load()
+         │
+         ├─ watchlistRepo.getWatchlist()  ──► GET /profile/watchlist
+         ├─ _applyOrder(...)              ──► SharedPreferences['watchlist_order']
+         │
+         ├─ Future.wait( getQuote(t)   ∀t )──► GET /assets/{ticker}          [paralelo]
+         ├─ Future.wait( getHistory(t) ∀t )──► GET /assets/{ticker}/history  [paralelo]
+         │
+         ├─ state = state.copyWith(quotes, history, loading: false)
+         │
+         └─ _loadNews(tickers)  [não aguardado]
+               └─ Future.wait( getNews(t) ∀t )─► GET /assets/{ticker}/news
+                     └─ state = state.copyWith(news, newsLoading: false)</div>
+  <p>Duas características do fluxo merecem destaque. Primeiro, as chamadas por ticker são disparadas em paralelo via <code>Future.wait</code>, de modo que a latência total tende ao maior tempo individual, e não à soma. Segundo, o carregamento de notícias é <strong>deliberadamente não aguardado</strong>: a tela renderiza cotações e gráficos assim que disponíveis, e a faixa de notícias preenche-se em seguida, com <em>skeleton</em> próprio.</p>
+</section>
+
+<!-- ══════════════════════════ 4 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">04</span>Estrutura de Diretórios</h2>
+  <div class="h2rule"></div>
+
+  <pre>lib/
+├── main.dart                     Bootstrap: ensureInitialized + ProviderScope
+├── app.dart                      MaterialApp.router; liga tema, locale e router
+│
+├── core/                         Infraestrutura transversal, sem regra de negócio
+│   ├── constants/
+│   │   ├── api_constants.dart    baseUrl (dart-define) + mapa de períodos UI→API
+│   │   └── app_colors.dart       Paleta única do design system
+│   ├── router/
+│   │   └── app_router.dart       GoRouter, guarda de rota e shell de 4 abas
+│   ├── theme/
+│   │   ├── app_theme.dart        ThemeData claro e escuro
+│   │   ├── theme_service.dart    ThemeNotifier + persistência da preferência
+│   │   └── locale_service.dart   LocaleNotifier + persistência do idioma
+│   ├── utils/
+│   │   ├── formatters.dart       Moeda, data, tempo relativo, rótulo de direção
+│   │   └── validators.dart       Validação de e-mail, senha e campo obrigatório
+│   └── widgets/
+│       ├── empty_state.dart      Estado vazio reutilizável com CTA opcional
+│       ├── error_view.dart       Estado de erro com ação de nova tentativa
+│       └── shimmer_loading.dart  ShimmerBox e AssetCardShimmer
+│
+├── domain/
+│   └── repositories/             Somente contratos abstratos (4 interfaces)
+│
+├── data/
+│   ├── datasources/
+│   │   ├── api_endpoints.dart    Catálogo centralizado de rotas
+│   │   ├── dio_client.dart       Provider do Dio configurado
+│   │   ├── auth_interceptor.dart Injeção de Bearer + tratamento de 401
+│   │   ├── secure_storage_service.dart   Token JWT
+│   │   └── user_storage_service.dart     Dados do usuário
+│   ├── models/                   8 modelos freezed (+ .freezed.dart e .g.dart)
+│   └── repositories/             4 implementações concretas
+│
+├── presentation/
+│   ├── viewmodels/               4 StateNotifiers com estado imutável
+│   └── views/                    Telas, agrupadas por feature, com widgets/ locais
+│
+└── l10n/
+    ├── intl_en.arb / intl_pt.arb Fontes de tradução (38 chaves)
+    └── app_localizations*.dart   Gerado por flutter gen-l10n</pre>
+
+  <h3>4.1 Convenções estruturais</h3>
+  <ul>
+    <li><strong>Agrupamento por feature dentro da camada.</strong> Cada tela possui um diretório próprio sob <code>views/</code>, com um subdiretório <code>widgets/</code> para componentes que só ela utiliza. Componentes usados por mais de uma feature sobem para <code>core/widgets/</code>.</li>
+    <li><strong>Provider colocado junto do que ele constrói.</strong> Não há arquivo central de <em>injection</em>; cada provider é declarado no final do arquivo do serviço ou repositório correspondente. Isso mantém a definição próxima do consumidor e evita um ponto único de acoplamento.</li>
+    <li><strong>Espelhamento na árvore de testes.</strong> <code>test/</code> reproduz a hierarquia de <code>lib/</code>, tornando previsível a localização do teste de qualquer unidade.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════ 5 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">05</span>Camada de Domínio</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">A camada de domínio contém exclusivamente contratos. São quatro interfaces abstratas, sem dependência de Flutter, Dio ou qualquer detalhe de infraestrutura.</p>
+
+  <h3>5.1 Contratos</h3>
+  <pre>abstract class AuthRepository {
+  Future&lt;AuthTokenModel&gt; login(String email, String password);
+  Future&lt;UserModel&gt; register({
+    required String name,      required String email,
+    required String password,  required String birthDate,
+    required String investorProfile,
+  });
+}
+
+abstract class AssetRepository {
+  Future&lt;List&lt;AssetModel&gt;&gt;        search(String query);
+  Future&lt;AssetQuoteModel&gt;         getQuote(String ticker);
+  Future&lt;List&lt;HistoryPointModel&gt;&gt; getHistory(String ticker, String period);
+  Future&lt;List&lt;NewsItemModel&gt;&gt;     getNews(String ticker);
+  Future&lt;List&lt;DividendModel&gt;&gt;     getDividends(String ticker);
+  Future&lt;FinancialsModel&gt;         getFinancials(String ticker);
+}
+
+abstract class WatchlistRepository {
+  Future&lt;List&lt;AssetModel&gt;&gt; getWatchlist();
+  Future&lt;void&gt; addAssets(List&lt;AssetModel&gt; assets);
+  Future&lt;void&gt; removeAssets(List&lt;String&gt; tickers);
+}
+
+abstract class ChatRepository {
+  Future&lt;String&gt; sendMessage(String userMessage);
+}</pre>
+
+  <h3>5.2 Propriedades de projeto</h3>
+  <table>
+    <thead><tr><th style="width:32%">Propriedade</th><th>Consequência prática</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Ausência de camada de <em>use case</em></strong></td><td>A orquestração reside nos <em>view models</em>. Para o volume atual de regras — combinação de chamadas e transformação de listas — uma classe por caso de uso adicionaria indireção sem isolar comportamento novo. Se surgirem regras compartilhadas entre telas, esse é o ponto natural de extração.</td></tr>
+      <tr><td><strong>Erros propagados como exceções</strong></td><td>Não há tipo <code>Result</code>/<code>Either</code>. As implementações deixam <code>DioException</code> propagar, e cada <em>view model</em> converte a exceção em estado de erro no seu <code>catch</code>. A abordagem é mais leve, ao custo de a assinatura do método não declarar as falhas possíveis.</td></tr>
+      <tr><td><strong>Granularidade fina do <code>AssetRepository</code></strong></td><td>Métodos separados por recurso (<code>getQuote</code>, <code>getHistory</code>, <code>getNews</code>…) permitem que o chamador componha exatamente as chamadas necessárias e paralelize à vontade — usado intensivamente em <code>HomeNotifier.load()</code>.</td></tr>
+      <tr><td><strong><code>ChatRepository</code> minimalista</strong></td><td>Uma única operação <code>sendMessage</code>, sem histórico de conversa no contrato. A troca do dublê local por um serviço real de IA exige apenas uma nova implementação e a alteração de uma linha no provider.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <strong>Métodos não consumidos</strong>
+    <code>getDividends</code> e <code>getFinancials</code> estão declarados, implementados e cobertos pelo contrato, mas nenhuma tela os consome no estado atual. Correspondem a uma tela de detalhe de ativo prevista e ainda não construída. São dívida deliberada, não código morto acidental.
+  </div>
+</section>
+
+<!-- ══════════════════════════ 6 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">06</span>Camada de Dados</h2>
+  <div class="h2rule"></div>
+
+  <h3>6.1 Modelos</h3>
+  <p>Todos os oito modelos são gerados por <strong>freezed</strong> combinado a <strong>json_serializable</strong>, obtendo imutabilidade, <code>copyWith</code>, igualdade estrutural, <code>toString</code> legível e serialização — sem código manual sujeito a divergência.</p>
+  <table>
+    <thead><tr><th style="width:24%">Modelo</th><th>Campos</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">AssetModel</td><td class="mono">ticker, name, iconUrl</td></tr>
+      <tr><td class="mono">AssetQuoteModel</td><td class="mono">ticker, name, iconUrl, priceUsd, direction</td></tr>
+      <tr><td class="mono">UserModel</td><td class="mono">id, name, email, birthDate, investorProfile, isActive</td></tr>
+      <tr><td class="mono">AuthTokenModel</td><td class="mono">accessToken, tokenType</td></tr>
+      <tr><td class="mono">HistoryPointModel</td><td class="mono">date, close</td></tr>
+      <tr><td class="mono">NewsItemModel</td><td class="mono">title, link, publisher, summary?, providerPublishTime</td></tr>
+      <tr><td class="mono">DividendModel</td><td class="mono">date, amount</td></tr>
+      <tr><td class="mono">FinancialsModel</td><td class="mono">marketCap?, peRatio?, dividendYield?, targetPrice?, recommendation?</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Mapeamento de nomenclatura</h4>
+  <p>O backend expõe campos em <code>snake_case</code>; o código Dart usa <code>lowerCamelCase</code>. A tradução é declarada campo a campo com <code>@JsonKey</code>, em vez de uma estratégia global de conversão de nomes:</p>
+  <pre>@freezed
+class AssetQuoteModel with _$AssetQuoteModel {
+  const factory AssetQuoteModel({
+    required String ticker,
+    required String name,
+    @JsonKey(name: 'icon_url')  required String iconUrl,
+    @JsonKey(name: 'price_usd') required double priceUsd,
+    required String direction,
+  }) = _AssetQuoteModel;
+
+  factory AssetQuoteModel.fromJson(Map&lt;String, dynamic&gt; json) =&gt;
+      _$AssetQuoteModelFromJson(json);
+}</pre>
+  <p>A anotação explícita é mais verbosa, porém torna o contrato auditável na leitura do próprio modelo e resiste a campos que fujam do padrão.</p>
+
+  <h4>Obrigatoriedade dos campos</h4>
+  <p><code>FinancialsModel</code> declara <strong>todos</strong> os campos como anuláveis, refletindo que indicadores fundamentalistas são indisponíveis para diversas classes de ativo — criptomoedas não possuem P/E nem <em>dividend yield</em>. Os demais modelos usam <code>required</code>, o que faz a desserialização falhar de forma explícita e imediata diante de uma resposta incompleta, em vez de propagar <code>null</code> silenciosamente até a UI.</p>
+
+  <h3>6.2 Fontes de dados</h3>
+
+  <h4>Cliente HTTP</h4>
+  <pre>final dioClientProvider = Provider&lt;Dio&gt;((ref) {
+  final dio = Dio(BaseOptions(
+    baseUrl: ApiConstants.baseUrl,
+    connectTimeout: const Duration(seconds: 15),
+    receiveTimeout: const Duration(seconds: 30),
+    headers: {'Content-Type': 'application/json'},
+  ));
+  final storage = ref.read(secureStorageServiceProvider);
+  final onLogout = ref.read(logoutCallbackProvider);
+  dio.interceptors.add(AuthInterceptor(storage, onLogout: onLogout));
+  return dio;
+});</pre>
+  <p>Os <em>timeouts</em> são assimétricos por intenção: 15 s para estabelecer conexão e 30 s para receber a resposta, acomodando <em>endpoints</em> de série histórica com período <code>max</code>, cuja carga útil é substancialmente maior.</p>
+
+  <h4>Catálogo de rotas</h4>
+  <p><code>ApiEndpoints</code> centraliza todos os caminhos como constantes ou funções puras. Nenhuma URL aparece literal em repositório ou <em>view model</em>, de modo que uma alteração de rota no backend tem ponto único de manutenção — e é diretamente testável, como comprovam os 13 casos de <code>api_endpoints_test.dart</code>.</p>
+
+  <h3>6.3 Implementações de repositório</h3>
+  <p>As implementações são deliberadamente finas: montam a requisição, desserializam a resposta e retornam. Não realizam cache, retry, log nem tratamento de erro — responsabilidades atribuídas ao interceptador (autenticação) e aos <em>view models</em> (apresentação do erro).</p>
+  <pre>@override
+Future&lt;List&lt;HistoryPointModel&gt;&gt; getHistory(String ticker, String period) async {
+  final r = await _dio.get(
+    ApiEndpoints.assetHistory(ticker),
+    queryParameters: {'period': period},
+  );
+  return (r.data as List)
+      .map((e) =&gt; HistoryPointModel.fromJson(e as Map&lt;String, dynamic&gt;))
+      .toList();
+}</pre>
+
+  <h4>Sincronização diferencial da watchlist</h4>
+  <p><code>WatchlistRepository</code> expõe operações em lote (<code>addAssets</code>, <code>removeAssets</code>) em vez de operações unitárias. O <code>ProfileNotifier</code> mantém a lista original e a lista selecionada em memória, calcula a diferença no momento de salvar e emite no máximo duas requisições — evitando uma chamada de rede por toque do usuário:</p>
+  <pre>final toAdd = state.selectedAssets
+    .where((a) =&gt; !originalTickers.contains(a.ticker)).toList();
+final toRemove = state.originalWatchlist
+    .where((a) =&gt; !selectedTickers.contains(a.ticker))
+    .map((a) =&gt; a.ticker).toList();
+
+if (toAdd.isNotEmpty)    await watchlistRepo.addAssets(toAdd);
+if (toRemove.isNotEmpty) await watchlistRepo.removeAssets(toRemove);</pre>
+
+  <h4>Repositório de chat</h4>
+  <p><code>MockChatRepository</code> implementa o contrato com um dicionário de palavras-chave (<code>preço</code>, <code>tendência</code>, <code>dividendo</code>, <code>crypto</code>, <code>etf</code>, <code>perfil</code>, <code>watchlist</code>, <code>ação</code>, <code>recomendação</code>) mapeadas a respostas em Markdown, com variantes sorteadas e latência artificial entre 800 ms e 1.500 ms para simular processamento. Existe uma resposta genérica para entradas não reconhecidas. O objetivo é permitir o desenvolvimento e a validação completa da UI de conversa antes da disponibilidade do serviço de IA.</p>
+</section>
+
+<!-- ══════════════════════════ 7 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">07</span>Camada de Apresentação</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">A apresentação segue MVVM: cada tela relevante possui um <em>view model</em> (<code>StateNotifier</code>) que expõe um estado imutável, e as <em>views</em> são funções desse estado.</p>
+
+  <h3>7.1 Padrão de estado</h3>
+  <p>Todo <em>view model</em> expõe uma única classe de estado imutável, com valores-padrão no construtor e <code>copyWith</code>. Estados de carregamento, erro e dados coexistem no mesmo objeto, o que elimina combinações inconsistentes entre variáveis independentes:</p>
+  <pre>class HomeState {
+  final bool loading;
+  final bool refreshing;
+  final String? error;
+  final List&lt;AssetQuoteModel&gt; quotes;
+  final String selectedPeriod;
+  final Map&lt;String, List&lt;HistoryPointModel&gt;&gt; history;
+  final List&lt;NewsItemModel&gt; news;
+  final bool newsLoading;
+
+  const HomeState({ this.loading = true, this.refreshing = false, ... });
+  HomeState copyWith({ ... });
+}</pre>
+  <div class="callout">
+    <strong>Distinção entre <code>loading</code> e <code>refreshing</code></strong>
+    A primeira carga exibe <em>skeleton</em> em tela cheia; o <em>pull-to-refresh</em> mantém o conteúdo atual visível e mostra apenas um indicador discreto no cabeçalho. Sem os dois sinalizadores separados, atualizar a tela faria o conteúdo desaparecer e reaparecer — regressão perceptível de qualidade.
+  </div>
+  <p>Nota de implementação: em todos os <code>copyWith</code> do projeto, o campo <code>error</code> é atribuído diretamente (<code>error: error</code>) e não com o operador <code>??</code>. É intencional: permite <strong>limpar</strong> o erro em uma transição de estado bem-sucedida. A contrapartida é que qualquer <code>copyWith</code> que não repasse o erro o descarta — comportamento que precisa ser conhecido por quem edita esses métodos.</p>
+
+  <h3>7.2 Inventário de view models</h3>
+  <table>
+    <thead><tr><th style="width:20%">View model</th><th style="width:26%">Estado</th><th>Responsabilidades</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">AuthNotifier</td><td class="mono">AuthState<br>{status, error}</td><td>Login, cadastro com auto-login subsequente, logout e tradução de erros HTTP para mensagens de usuário.</td></tr>
+      <tr><td class="mono">HomeNotifier</td><td class="mono">HomeState<br>(8 campos)</td><td>Carga inicial e atualização, agregação paralela de cotações e históricos, troca de período, reordenação persistida e carga assíncrona de notícias.</td></tr>
+      <tr><td class="mono">ProfileNotifier</td><td class="mono">ProfileState<br>(10 campos)</td><td>Leitura do usuário, busca de ativos com <em>debounce</em>, seleção/remoção local, sincronização diferencial e atualização de perfil.</td></tr>
+      <tr><td class="mono">ChatNotifier</td><td class="mono">ChatState<br>{messages, typing}</td><td>Histórico de mensagens, mensagem de boas-vindas, indicador de digitação e degradação para mensagem de erro na falha.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>7.3 Decisões de UX com impacto técnico</h3>
+  <table>
+    <thead><tr><th style="width:26%">Comportamento</th><th>Implementação</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Busca com <em>debounce</em></strong></td><td><code>ProfileNotifier.search</code> mantém um <code>Timer</code> de 400 ms cancelado a cada tecla; a requisição só parte na pausa da digitação. O timer é cancelado em <code>dispose</code>, prevenindo emissão de estado após o descarte.</td></tr>
+      <tr><td><strong>Ordem manual da watchlist</strong></td><td><code>ReorderableListView</code> na Home; a nova ordem de tickers é gravada em <code>SharedPreferences</code> e reaplicada em <code>_applyOrder</code> a cada carga. Ativos ausentes da ordem salva são anexados ao final, o que mantém o comportamento correto quando a watchlist muda no servidor.</td></tr>
+      <tr><td><strong>Notícias em carrossel</strong></td><td><code>NewsTicker</code> usa <code>PageController(viewportFraction: 0.65)</code> com <code>Timer.periodic</code> de 4 s e avanço circular. O timer é reiniciado em <code>didUpdateWidget</code> e cancelado em <code>dispose</code>.</td></tr>
+      <tr><td><strong>Retorno tátil</strong></td><td><code>HapticFeedback</code> aplicado de forma graduada: <code>lightImpact</code> em navegação e ações comuns, <code>mediumImpact</code> ao iniciar o arraste e em ações destrutivas, <code>selectionClick</code> na troca de idioma.</td></tr>
+      <tr><td><strong>Estados vazios acionáveis</strong></td><td><code>EmptyState</code> aceita rótulo e ação; a watchlist vazia não apenas informa, mas conduz o usuário à aba Perfil.</td></tr>
+      <tr><td><strong>Confirmação de logout</strong></td><td>Diálogo de confirmação obrigatório antes de encerrar a sessão, com verificação de <code>context.mounted</code> após o <code>await</code> — evita uso de contexto desmontado.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>7.4 Componentes reutilizáveis</h3>
+  <ul>
+    <li><code>ShimmerBox</code> / <code>AssetCardShimmer</code> — <em>placeholders</em> com dimensões próximas ao conteúdo final, minimizando deslocamento de layout na troca.</li>
+    <li><code>ErrorView</code> — mensagem com ação opcional de nova tentativa, ligada diretamente ao método de recarga do <em>view model</em>.</li>
+    <li><code>EmptyState</code> — ícone, título, subtítulo e CTA opcional.</li>
+    <li><code>FloatingIAAvatar</code> — atalho flutuante para o assistente, com animação de pulso contínua (<code>repeat(reverse: true)</code>, escala 1,0→1,06).</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════ 8 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">08</span>Gerenciamento de Estado</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">Riverpod atua simultaneamente como contêiner de injeção de dependência e como mecanismo de estado reativo, eliminando a necessidade de uma biblioteca de DI separada.</p>
+
+  <h3>8.1 Catálogo de providers</h3>
+  <table>
+    <thead><tr><th style="width:30%">Provider</th><th style="width:22%">Tipo</th><th>Função</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">secureStorageServiceProvider</td><td class="mono">Provider</td><td>Armazenamento seguro do token.</td></tr>
+      <tr><td class="mono">userStorageServiceProvider</td><td class="mono">Provider</td><td>Armazenamento seguro dos dados do usuário.</td></tr>
+      <tr><td class="mono">dioClientProvider</td><td class="mono">Provider</td><td>Cliente HTTP com interceptador acoplado.</td></tr>
+      <tr><td class="mono">logoutCallbackProvider</td><td class="mono">StateProvider</td><td>Ponto de extensão para reação global a 401.</td></tr>
+      <tr><td class="mono">authRepositoryProvider</td><td class="mono">Provider&lt;AuthRepository&gt;</td><td>Resolve a implementação de autenticação.</td></tr>
+      <tr><td class="mono">assetRepositoryProvider</td><td class="mono">Provider&lt;AssetRepository&gt;</td><td>Resolve a implementação de ativos.</td></tr>
+      <tr><td class="mono">watchlistRepositoryProvider</td><td class="mono">Provider&lt;WatchlistRepository&gt;</td><td>Resolve a implementação de watchlist.</td></tr>
+      <tr><td class="mono">chatRepositoryProvider</td><td class="mono">Provider&lt;ChatRepository&gt;</td><td>Resolve a implementação do assistente.</td></tr>
+      <tr><td class="mono">sharedPreferencesProvider</td><td class="mono">FutureProvider</td><td>Instância assíncrona de preferências.</td></tr>
+      <tr><td class="mono">themeProvider</td><td class="mono">StateNotifierProvider</td><td><code>ThemeMode</code> corrente.</td></tr>
+      <tr><td class="mono">localeProvider</td><td class="mono">StateNotifierProvider</td><td><code>Locale</code> corrente.</td></tr>
+      <tr><td class="mono">appRouterProvider</td><td class="mono">Provider&lt;GoRouter&gt;</td><td>Configuração de rotas com acesso ao contêiner.</td></tr>
+      <tr><td class="mono">authNotifierProvider</td><td class="mono">StateNotifierProvider</td><td>Estado de autenticação.</td></tr>
+      <tr><td class="mono">homeNotifierProvider</td><td class="mono">StateNotifierProvider</td><td>Estado da tela inicial.</td></tr>
+      <tr><td class="mono">profileNotifierProvider</td><td class="mono">StateNotifierProvider</td><td>Estado da tela de perfil.</td></tr>
+      <tr><td class="mono">chatNotifierProvider</td><td class="mono">StateNotifierProvider</td><td>Estado da conversa.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.2 Convenções de acesso</h3>
+  <p>A distinção entre <code>ref.watch</code> e <code>ref.read</code> é aplicada de forma consistente:</p>
+  <ul>
+    <li><code>ref.watch</code> — exclusivamente em <code>build</code>, para estabelecer a assinatura reativa que reconstrói o widget.</li>
+    <li><code>ref.read</code> — em <em>callbacks</em>, construtores e métodos, onde a reconstrução não é desejada.</li>
+  </ul>
+  <p>Dentro dos <em>view models</em>, os repositórios são obtidos por <code>_ref.read(...)</code> no momento do uso, e não capturados no construtor. Isso permite que uma sobrescrita de provider feita em teste seja observada mesmo após a construção do <em>notifier</em>.</p>
+
+  <h3>8.3 Ciclo de vida</h3>
+  <p><code>HomeNotifier</code> e <code>ProfileNotifier</code> disparam a carga inicial no próprio construtor. A consequência é que a primeira leitura do provider já inicia o tráfego de rede, sem necessidade de <code>initState</code> na view — e o estado é preservado enquanto o provider permanecer vivo, evitando recarga a cada troca de aba.</p>
+
+  <h3>8.4 Testabilidade</h3>
+  <p>A sobrescrita de providers é o mecanismo central de teste da camada de apresentação:</p>
+  <pre>final container = ProviderContainer(
+  overrides: [
+    watchlistRepositoryProvider.overrideWithValue(mockWatchlist),
+    assetRepositoryProvider.overrideWithValue(mockAsset),
+  ],
+);
+addTearDown(container.dispose);</pre>
+  <p>Nenhum <em>singleton</em> global, <em>service locator</em> ou estado estático precisa ser reinicializado entre testes, o que elimina uma classe inteira de falhas intermitentes por vazamento de estado.</p>
+
+  <div class="callout warn">
+    <strong>Adoção parcial da API moderna</strong>
+    O projeto utiliza <code>StateNotifier</code>, e não a API mais recente <code>Notifier</code>/<code>AsyncNotifier</code>, ainda que <code>riverpod_generator</code> conste nas dependências de desenvolvimento. A escolha é coerente internamente — não há mistura de padrões — mas representa dívida técnica frente à direção do ecossistema Riverpod. A migração é mecânica e pode ser feita por <em>notifier</em>, sem alteração das views.
+  </div>
+</section>
+
+<!-- ══════════════════════════ 9 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">09</span>Navegação e Roteamento</h2>
+  <div class="h2rule"></div>
+
+  <h3>9.1 Mapa de rotas</h3>
+  <table>
+    <thead><tr><th style="width:20%">Rota</th><th style="width:26%">Tela</th><th style="width:14%">Acesso</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">/</td><td>SplashView</td><td>Pública</td><td>Verifica token e redireciona após ~1,2 s de animação.</td></tr>
+      <tr><td class="mono">/login</td><td>LoginView</td><td>Pública</td><td>Redireciona para <code>/home</code> se já houver sessão.</td></tr>
+      <tr><td class="mono">/register</td><td>RegisterView</td><td>Pública</td><td>Auto-login após cadastro bem-sucedido.</td></tr>
+      <tr><td class="mono">/home</td><td>HomeView</td><td>Protegida</td><td>Ramo 1 do shell de navegação.</td></tr>
+      <tr><td class="mono">/profile</td><td>ProfileView</td><td>Protegida</td><td>Ramo 2 do shell.</td></tr>
+      <tr><td class="mono">/chat</td><td>ChatView</td><td>Protegida</td><td>Ramo 3 do shell.</td></tr>
+      <tr><td class="mono">/config</td><td>ConfigView</td><td>Protegida</td><td>Ramo 4 do shell.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>9.2 Shell com estado preservado</h3>
+  <p>As quatro abas são declaradas como <code>StatefulShellRoute.indexedStack</code>, com um <code>StatefulShellBranch</code> por aba. Cada ramo mantém sua própria pilha de navegação e seu estado de rolagem, de modo que alternar entre abas não reconstrói a tela nem reposiciona a lista. A alternativa — um <code>IndexedStack</code> manual sob uma rota única — exigiria sincronizar índice e URL à mão.</p>
+  <pre>StatefulShellRoute.indexedStack(
+  builder: (context, state, shell) =&gt; AppShell(shell: shell),
+  branches: [
+    StatefulShellBranch(routes: [GoRoute(path: '/home',    ...)]),
+    StatefulShellBranch(routes: [GoRoute(path: '/profile', ...)]),
+    StatefulShellBranch(routes: [GoRoute(path: '/chat',    ...)]),
+    StatefulShellBranch(routes: [GoRoute(path: '/config',  ...)]),
+  ],
+)</pre>
+  <p>Em <code>AppShell._onTap</code>, o parâmetro <code>initialLocation: index == shell.currentIndex</code> implementa o comportamento esperado de barra de abas: tocar na aba já ativa retorna à raiz daquele ramo, enquanto tocar em outra aba preserva onde o usuário estava.</p>
+
+  <h3>9.3 Guarda de rota</h3>
+  <pre>redirect: (context, state) async {
+  final storage = ref.read(secureStorageServiceProvider);
+  final hasToken = await storage.hasToken();
+  final loc = state.uri.toString();
+  final publicRoutes = ['/', '/login', '/register'];
+
+  if (!hasToken &amp;&amp; !publicRoutes.contains(loc)) return '/login';
+  if (hasToken &amp;&amp; (loc == '/login' || loc == '/register')) return '/home';
+  return null;
+}</pre>
+  <p>A guarda é <strong>bidirecional</strong>: além de bloquear rotas protegidas sem sessão, impede que um usuário autenticado retorne às telas de login e cadastro. Sendo assíncrona, consulta o armazenamento seguro a cada navegação, o que garante decisão sempre baseada no estado real de credencial — e não em cópia em memória potencialmente desatualizada por um 401 tratado pelo interceptador.</p>
+
+  <div class="callout">
+    <strong>Custo e mitigação</strong>
+    Ler o Keychain/EncryptedSharedPreferences a cada navegação implica uma operação de I/O por transição. Para o volume de rotas deste aplicativo o impacto é imperceptível. Caso o número de rotas cresça, o caminho natural é manter um <code>StateProvider&lt;bool&gt;</code> de sessão em memória, sincronizado pelo interceptador e pelo fluxo de login, e usar <code>refreshListenable</code>.
+  </div>
+</section>
+
+<!-- ══════════════════════════ 10 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">10</span>Autenticação e Segurança</h2>
+  <div class="h2rule"></div>
+
+  <h3>10.1 Fluxo de autenticação</h3>
+  <div class="diagram">Cadastro                          Login
+────────                          ─────
+RegisterView                      LoginView
+   │ AuthNotifier.register()         │ AuthNotifier.login()
+   ▼                                 ▼
+POST /user/register               POST /auth/login
+   (application/json)                (x-www-form-urlencoded,
+   │                                  grant_type=password)
+   ▼                                 │
+UserModel                            ▼
+   │                              AuthTokenModel {access_token, token_type}
+   └──── auto-login ─────────────►   │
+                                     ▼
+                            SecureStorage.saveToken(access_token)
+                                     │
+                                     ▼
+                            state = AuthState(success) → context.go('/home')
+
+Requisições subsequentes                     Expiração / revogação
+────────────────────────                     ─────────────────────
+AuthInterceptor.onRequest                    AuthInterceptor.onError
+   └─ Authorization: Bearer &lt;token&gt;             └─ if (status == 401)
+                                                     ├─ clearToken()
+                                                     └─ onLogout()</div>
+
+  <h3>10.2 Formato da requisição de login</h3>
+  <p>O <em>endpoint</em> de login segue o padrão OAuth2 <em>Resource Owner Password Credentials</em>, exigindo <code>application/x-www-form-urlencoded</code> com os campos <code>username</code>, <code>password</code> e <code>grant_type</code> — convenção adotada por FastAPI com <code>OAuth2PasswordRequestForm</code>. O corpo é montado com <code>Uri.encodeComponent</code> em cada valor, prevenindo quebra do formato por caracteres reservados presentes em e-mails ou senhas:</p>
+  <pre>data: 'username=${Uri.encodeComponent(email)}'
+      '&amp;password=${Uri.encodeComponent(password)}'
+      '&amp;grant_type=password',
+options: Options(contentType: 'application/x-www-form-urlencoded'),</pre>
+
+  <h3>10.3 Armazenamento de credenciais</h3>
+  <table>
+    <thead><tr><th style="width:26%">Dado</th><th style="width:28%">Mecanismo</th><th>Justificativa</th></tr></thead>
+    <tbody>
+      <tr><td>Token de acesso</td><td><code>flutter_secure_storage</code><br>chave <code>auth_token</code></td><td>Credencial de portador; exige armazenamento cifrado pelo sistema operacional.</td></tr>
+      <tr><td>Dados do usuário</td><td><code>flutter_secure_storage</code><br>chave <code>user_data</code></td><td>Contém e-mail e data de nascimento — dado pessoal, tratado sob o mesmo nível de proteção do token.</td></tr>
+      <tr><td>Tema e idioma</td><td><code>SharedPreferences</code></td><td>Preferência de interface, sem valor para um atacante.</td></tr>
+      <tr><td>Ordem da watchlist</td><td><code>SharedPreferences</code></td><td>Estado de apresentação, reconstruível.</td></tr>
+    </tbody>
+  </table>
+  <p>No Android, <code>flutter_secure_storage</code> é configurado com <code>AndroidOptions(encryptedSharedPreferences: true)</code>, o que direciona o armazenamento para <code>EncryptedSharedPreferences</code> com chave gerenciada pelo Android Keystore, em vez do arquivo de preferências em texto claro.</p>
+
+  <h3>10.4 Tratamento centralizado de sessão expirada</h3>
+  <p><code>AuthInterceptor</code> concentra duas responsabilidades transversais, mantendo repositórios e <em>view models</em> livres de lógica de autenticação:</p>
+  <ul>
+    <li><strong><code>onRequest</code></strong> — lê o token e, se presente, injeta o cabeçalho <code>Authorization: Bearer &lt;token&gt;</code>. Nenhum repositório manipula cabeçalhos de autenticação.</li>
+    <li><strong><code>onError</code></strong> — ao detectar HTTP 401, limpa o token armazenado e invoca <code>onLogout</code>. Como a guarda de rota consulta o armazenamento a cada navegação, a próxima transição já redireciona para <code>/login</code>.</li>
+  </ul>
+
+  <h3>10.5 Superfície de segurança e limitações</h3>
+  <table>
+    <thead><tr><th style="width:34%">Aspecto</th><th style="width:14%">Situação</th><th>Nota</th></tr></thead>
+    <tbody>
+      <tr><td>Token em armazenamento cifrado</td><td><span class="badge ok">Sim</span></td><td>Keychain (iOS) / Keystore + EncryptedSharedPreferences (Android).</td></tr>
+      <tr><td>Limpeza de credencial em 401</td><td><span class="badge ok">Sim</span></td><td>Centralizada no interceptador.</td></tr>
+      <tr><td>Validação de entrada no cliente</td><td><span class="badge ok">Sim</span></td><td><code>Validators</code>: formato de e-mail, senha ≥ 6 caracteres, campos obrigatórios.</td></tr>
+      <tr><td>Mensagens de erro sem vazamento</td><td><span class="badge ok">Sim</span></td><td><code>_extractError</code> traduz códigos HTTP para mensagens genéricas ao usuário.</td></tr>
+      <tr><td><em>Refresh token</em></td><td><span class="badge no">Ausente</span></td><td>O backend retorna apenas <code>access_token</code>. Expirada a sessão, o usuário reautentica manualmente.</td></tr>
+      <tr><td>Certificate pinning</td><td><span class="badge no">Ausente</span></td><td>Recomendado antes de distribuição em produção.</td></tr>
+      <tr><td>HTTPS obrigatório</td><td><span class="badge part">Configurável</span></td><td>O valor-padrão de <code>API_BASE</code> é <code>http://localhost:8000</code>, adequado a desenvolvimento. Builds de produção <strong>devem</strong> sobrescrever com origem HTTPS via <code>--dart-define</code>.</td></tr>
+      <tr><td>Ofuscação de binário</td><td><span class="badge part">Não configurada</span></td><td><code>--obfuscate --split-debug-info</code> recomendado no pipeline de release.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <strong>Requisito para produção</strong>
+    A ausência de <em>certificate pinning</em> combinada à possibilidade de build apontar para origem HTTP torna o tráfego suscetível a interceptação em redes hostis. Antes de qualquer distribuição pública, é necessário: (1) fixar <code>API_BASE</code> em HTTPS no pipeline de build; (2) avaliar a adoção de pinning via <code>badCertificateCallback</code> do Dio; (3) habilitar ofuscação no release.
+  </div>
+</section>
+
+<!-- ══════════════════════════ 11 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">11</span>Contrato da API</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">Base URL definida em tempo de compilação por <code>String.fromEnvironment('API_BASE')</code>, com <em>fallback</em> <code>http://localhost:8000</code>. Todos os <em>endpoints</em> protegidos exigem o cabeçalho <code>Authorization: Bearer &lt;token&gt;</code>, injetado automaticamente.</p>
+
+  <h3>11.1 Endpoints consumidos</h3>
+  <table>
+    <thead><tr><th style="width:8%">Método</th><th style="width:30%">Caminho</th><th style="width:24%">Payload / Query</th><th>Resposta</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">POST</td><td class="mono">/auth/login</td><td class="mono">form: username, password, grant_type</td><td class="mono">AuthTokenModel</td></tr>
+      <tr><td class="mono">POST</td><td class="mono">/user/register</td><td class="mono">json: name, email, password, birth_date, investor_profile</td><td class="mono">UserModel</td></tr>
+      <tr><td class="mono">PUT</td><td class="mono">/user/update/{id}</td><td class="mono">json: id, name, email, investor_profile</td><td class="mono">—</td></tr>
+      <tr><td class="mono">DELETE</td><td class="mono">/user/delete/{id}</td><td class="mono">—</td><td class="mono">—</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/assets</td><td class="mono">?search={query}</td><td class="mono">AssetModel[]</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/assets/{ticker}</td><td class="mono">—</td><td class="mono">AssetQuoteModel</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/assets/{ticker}/history</td><td class="mono">?period={1d|5d|1mo|1y|max}</td><td class="mono">HistoryPointModel[]</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/assets/{ticker}/news</td><td class="mono">—</td><td class="mono">NewsItemModel[]</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/assets/{ticker}/dividends</td><td class="mono">—</td><td class="mono">DividendModel[]</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/assets/{ticker}/financials</td><td class="mono">—</td><td class="mono">FinancialsModel</td></tr>
+      <tr><td class="mono">GET</td><td class="mono">/profile/watchlist</td><td class="mono">—</td><td class="mono">AssetModel[]</td></tr>
+      <tr><td class="mono">POST</td><td class="mono">/profile/watchlist/add</td><td class="mono">json: [{ticker, name, icon_url}]</td><td class="mono">—</td></tr>
+      <tr><td class="mono">POST</td><td class="mono">/profile/watchlist/remove</td><td class="mono">json: [{ticker}]</td><td class="mono">—</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:9pt;color:var(--ink-faint)"><code>DELETE /user/delete/{id}</code> está declarado em <code>ApiEndpoints</code> e coberto por teste, mas ainda não é acionado por nenhuma tela — corresponde à funcionalidade de exclusão de conta prevista.</p>
+
+  <h3>11.2 Tradução de períodos</h3>
+  <p>Os rótulos de período exibidos ao usuário não coincidem com os valores aceitos pela API. A conversão é centralizada em <code>PeriodMap</code>, evitando que a nomenclatura do provedor de dados vaze para a interface:</p>
+  <table>
+    <thead><tr><th style="width:22%">Rótulo na UI</th><th style="width:22%">Valor na API</th><th>Janela</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1D</td><td class="mono">1d</td><td>Um dia</td></tr>
+      <tr><td class="mono">1W</td><td class="mono">5d</td><td>Cinco pregões (uma semana útil)</td></tr>
+      <tr><td class="mono">1M</td><td class="mono">1mo</td><td>Um mês — período padrão da aplicação</td></tr>
+      <tr><td class="mono">1Y</td><td class="mono">1y</td><td>Um ano</td></tr>
+      <tr><td class="mono">ALL</td><td class="mono">max</td><td>Série completa disponível</td></tr>
+    </tbody>
+  </table>
+  <p>Toda conversão aplica <em>fallback</em> para <code>'1mo'</code> em caso de chave desconhecida, de modo que um rótulo inválido degrada para o comportamento padrão em vez de gerar exceção.</p>
+
+  <h3>11.3 Tratamento de erros HTTP</h3>
+  <table>
+    <thead><tr><th style="width:14%">Código</th><th style="width:34%">Tratamento</th><th>Mensagem ao usuário</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">401</td><td>Interceptador limpa o token e dispara <code>onLogout</code>; no fluxo de login, é traduzido pelo <em>view model</em>.</td><td>“Email ou senha incorretos.”</td></tr>
+      <tr><td class="mono">400</td><td>Tratado no cadastro.</td><td>“Email já cadastrado.”</td></tr>
+      <tr><td class="mono">422</td><td>Falha de validação do backend.</td><td>“Dados inválidos.”</td></tr>
+      <tr><td class="mono">Rede</td><td><code>SocketException</code> / falha de conexão.</td><td>“Sem conexão com o servidor.”</td></tr>
+      <tr><td class="mono">Demais</td><td><em>Fallback</em> genérico.</td><td>“Erro inesperado. Tente novamente.”</td></tr>
+    </tbody>
+  </table>
+  <p>Falhas em <em>endpoints</em> não críticos são absorvidas sem interromper a tela. O carregamento de notícias, por exemplo, aplica <code>.catchError((_) =&gt; &lt;NewsItemModel&gt;[])</code> por ticker: um ativo sem notícias disponíveis não impede a exibição das notícias dos demais.</p>
+</section>
+
+<!-- ══════════════════════════ 12 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">12</span>Persistência Local</h2>
+  <div class="h2rule"></div>
+
+  <h3>12.1 Chaves de armazenamento</h3>
+  <table>
+    <thead><tr><th style="width:24%">Chave</th><th style="width:22%">Mecanismo</th><th style="width:14%">Tipo</th><th>Conteúdo</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">auth_token</td><td>SecureStorage</td><td class="mono">String</td><td>Token JWT de acesso.</td></tr>
+      <tr><td class="mono">user_data</td><td>SecureStorage</td><td class="mono">String (JSON)</td><td>Dados do usuário serializados em <code>snake_case</code>.</td></tr>
+      <tr><td class="mono">is_dark_theme</td><td>SharedPreferences</td><td class="mono">bool</td><td>Preferência de tema; padrão <code>true</code>.</td></tr>
+      <tr><td class="mono">locale_code</td><td>SharedPreferences</td><td class="mono">String</td><td>Código de idioma; padrão <code>'pt'</code>.</td></tr>
+      <tr><td class="mono">watchlist_order</td><td>SharedPreferences</td><td class="mono">List&lt;String&gt;</td><td>Ordem manual dos tickers.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>12.2 Serialização do usuário</h3>
+  <p><code>UserStorageService</code> grava o JSON já em <code>snake_case</code>, o mesmo formato retornado pela API. A leitura pode assim reaproveitar <code>UserModel.fromJson</code> sem transformação intermediária, e um payload gravado por versão anterior permanece compatível.</p>
+  <p>A leitura é defensiva: uma falha de <em>parse</em> retorna <code>null</code> em vez de propagar exceção.</p>
+  <pre>Future&lt;UserModel?&gt; readUser() async {
+  final raw = await _storage.read(key: _userKey);
+  if (raw == null) return null;
+  try {
+    return UserModel.fromJson(jsonDecode(raw) as Map&lt;String, dynamic&gt;);
+  } catch (_) {
+    return null;   // dado corrompido ou de schema antigo → trata como ausente
+  }
+}</pre>
+  <p>O efeito prático é que uma mudança de <em>schema</em> entre versões do aplicativo degrada para “usuário não encontrado localmente” em vez de travar a tela de perfil.</p>
+
+  <h3>12.3 Reconciliação da ordem da watchlist</h3>
+  <p>A ordem persistida é uma lista de tickers, não de objetos completos. Em <code>_applyOrder</code>, os ativos vindos do servidor são indexados por ticker e reordenados conforme a lista salva; ativos ausentes da ordem — adicionados em outro dispositivo, por exemplo — são anexados ao final:</p>
+  <pre>final map = {for (final a in assets) a.ticker: a};
+final ordered   = order.where(map.containsKey).map((t) =&gt; map[t]!).toList();
+final remaining = assets.where((a) =&gt; !order.contains(a.ticker)).toList();
+return [...ordered, ...remaining];</pre>
+  <p>O algoritmo é tolerante à divergência em ambas as direções: tickers salvos que já não existem são descartados, e tickers novos aparecem sem exigir invalidação da preferência.</p>
+
+  <div class="callout">
+    <strong>Ausência de cache de dados de mercado</strong>
+    Cotações, históricos e notícias não são persistidos; toda abertura da tela inicial busca dados frescos. Para dados de mercado essa é a escolha correta — informação de preço desatualizada é pior do que ausência de informação. O único conteúdo remoto cacheado são os ícones de ativos, via <code>cached_network_image</code>, por serem imutáveis na prática.
+  </div>
+</section>
+
+<!-- ══════════════════════════ 13 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">13</span>Design System e Temas</h2>
+  <div class="h2rule"></div>
+
+  <h3>13.1 Paleta</h3>
+  <table>
+    <thead><tr><th style="width:26%">Token</th><th style="width:18%">Valor</th><th>Aplicação</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">gain / primary</td><td class="mono">#00C805</td><td>Alta de ativo, cor de marca, ações primárias.</td></tr>
+      <tr><td class="mono">primaryDark</td><td class="mono">#00A004</td><td>Primária no tema claro, para garantir contraste sobre fundo branco.</td></tr>
+      <tr><td class="mono">loss</td><td class="mono">#FF3B30</td><td>Queda de ativo, estados de erro, ações destrutivas.</td></tr>
+      <tr><td class="mono">bgDark</td><td class="mono">#121212</td><td>Fundo do tema escuro.</td></tr>
+      <tr><td class="mono">surfaceDark</td><td class="mono">#1E1E1E</td><td>Superfícies elevadas no tema escuro.</td></tr>
+      <tr><td class="mono">cardDark</td><td class="mono">#252525</td><td>Cartões no tema escuro.</td></tr>
+      <tr><td class="mono">bgLight</td><td class="mono">#F5F5F5</td><td>Fundo do tema claro.</td></tr>
+      <tr><td class="mono">textSecondary</td><td class="mono">#9E9E9E</td><td>Texto de apoio em ambos os temas.</td></tr>
+      <tr><td class="mono">divider</td><td class="mono">#2A2A2A</td><td>Separadores e bordas sutis no tema escuro.</td></tr>
+    </tbody>
+  </table>
+  <p>A escolha do verde como cor primária <strong>e</strong> como cor de valorização é intencional: em um produto financeiro, a cor de marca coincidir com o sinal de ganho reforça a leitura imediata dos cartões de ativo. O par verde/vermelho segue a convenção do domínio; a direção é sempre acompanhada de ícone de seta, de modo que a informação não depende exclusivamente de cor.</p>
+
+  <h3>13.2 Tokens de forma e componente</h3>
+  <p>Ambos os temas são construídos com <code>useMaterial3: true</code> e definem explicitamente <code>cardTheme</code>, <code>appBarTheme</code>, <code>inputDecorationTheme</code>, <code>elevatedButtonTheme</code>, <code>chipTheme</code>, <code>dividerTheme</code> e <code>snackBarTheme</code>. A padronização no tema — e não em cada widget — mantém a consistência sem repetição de estilo nas telas.</p>
+  <table>
+    <thead><tr><th style="width:30%">Token</th><th style="width:22%">Valor</th><th>Aplicação</th></tr></thead>
+    <tbody>
+      <tr><td>Raio de cartão</td><td class="mono">16 px</td><td>Cartões padrão do tema.</td></tr>
+      <tr><td>Raio de contêiner destacado</td><td class="mono">20 px</td><td>Cartão de gráfico histórico.</td></tr>
+      <tr><td>Raio de campo e botão</td><td class="mono">12 px</td><td>Entradas de texto e botões elevados.</td></tr>
+      <tr><td>Altura mínima de botão</td><td class="mono">52 px</td><td>Alvo de toque confortável em ações primárias.</td></tr>
+      <tr><td>Espaçamento horizontal</td><td class="mono">16 px</td><td>Margem lateral padrão das telas.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>13.3 Diferenciação entre temas</h3>
+  <p>Os temas não são variações mecânicas de uma mesma definição. A elevação é tratada de forma distinta em cada um: no tema escuro os cartões têm <code>elevation: 0</code> e a hierarquia é expressa por variação de luminosidade da superfície e bordas de 0,5 px; no tema claro há elevação real e sombra suave. Essa distinção evita o resultado comum de sombras invisíveis sobre fundo escuro ou de superfícies indistintas sobre fundo claro.</p>
+  <p>O tema escuro é o padrão da aplicação, apresentado na interface como “Ativo (OLED)” — coerente com o fundo <code>#121212</code>, próximo ao preto, que reduz consumo em telas OLED.</p>
+
+  <h3>13.4 Splash e identidade</h3>
+  <p><code>SplashView</code> combina <code>FadeTransition</code> de 800 ms com verificação de sessão de 1.200 ms, garantindo que a animação complete antes do redirecionamento. A checagem de <code>mounted</code> é feita antes e depois do <code>await</code>, prevenindo navegação sobre um widget já descartado.</p>
+</section>
+
+<!-- ══════════════════════════ 14 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">14</span>Internacionalização</h2>
+  <div class="h2rule"></div>
+
+  <h3>14.1 Configuração</h3>
+  <pre># l10n.yaml
+arb-dir: lib/l10n
+template-arb-file: intl_en.arb
+output-localization-file: app_localizations.dart</pre>
+  <p>O projeto utiliza o pipeline oficial <code>flutter gen-l10n</code>, habilitado por <code>generate: true</code> em <code>pubspec.yaml</code>. São dois locales — <code>pt</code> (padrão) e <code>en</code> — com <strong>38 chaves</strong> traduzidas. O arquivo-modelo é o inglês, convenção que facilita a inclusão de novos idiomas a partir de uma base neutra.</p>
+
+  <h3>14.2 Delegates e seleção de idioma</h3>
+  <p><code>MaterialApp.router</code> registra <code>GlobalMaterialLocalizations</code>, <code>GlobalWidgetsLocalizations</code> e <code>GlobalCupertinoLocalizations</code>, o que traduz também os componentes nativos do framework — rótulos de diálogo, seletor de data e menus de contexto.</p>
+  <p>A seleção é explícita e persistida: <code>LocaleNotifier</code> lê <code>locale_code</code> de <code>SharedPreferences</code> na construção e grava a cada troca. O idioma não segue o locale do dispositivo por padrão, decisão que privilegia previsibilidade — a escolha do usuário prevalece entre sessões.</p>
+
+  <h3>14.3 Cobertura e limitação atual</h3>
+  <div class="callout warn">
+    <strong>Internacionalização parcial</strong>
+    A infraestrutura de i18n está completa e funcional, mas parte das <em>strings</em> permanece embutida em português diretamente nos widgets — rótulos da barra de navegação (“Início”, “Perfil”, “IA Chat”, “Config”), títulos de seção da Home (“Watchlist”, “Gráficos”, “Notícias”), mensagens de erro dos <em>view models</em> e as respostas do assistente. Com o idioma em EN-US, essas partes seguem exibindo texto em português. A correção é mecânica — mover cada literal para os arquivos <code>.arb</code> e substituir por <code>AppLocalizations.of(context)</code> — mas ainda não foi concluída.
+  </div>
+  <p>As mensagens de erro representam um caso à parte: por estarem nos <em>view models</em>, que não possuem <code>BuildContext</code>, a externalização exige uma decisão adicional de projeto — retornar chaves de erro em vez de texto pronto, deixando a tradução para a camada de view.</p>
+</section>
+
+<!-- ══════════════════════════ 15 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">15</span>Estratégia de Testes</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">A suíte contém <strong>93 casos de teste</strong> distribuídos em 10 arquivos, com a árvore de testes espelhando a estrutura de <code>lib/</code>.</p>
+
+  <h3>15.1 Distribuição</h3>
+  <table>
+    <thead><tr><th style="width:44%">Arquivo</th><th style="width:12%">Casos</th><th>Cobertura</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">core/utils/validators_test.dart</td><td class="mono">20</td><td>Formato de e-mail, comprimento de senha, campos obrigatórios e casos de borda.</td></tr>
+      <tr><td class="mono">core/constants/api_endpoints_test.dart</td><td class="mono">13</td><td>Construção de cada rota, incluindo interpolação de <code>ticker</code> e <code>id</code>.</td></tr>
+      <tr><td class="mono">core/utils/formatters_test.dart</td><td class="mono">11</td><td>Moeda, data, tempo relativo e rótulo de direção; entradas malformadas.</td></tr>
+      <tr><td class="mono">presentation/viewmodels/profile_viewmodel_test.dart</td><td class="mono">10</td><td>Busca com <em>debounce</em>, seleção, sincronização diferencial e atualização de perfil.</td></tr>
+      <tr><td class="mono">presentation/viewmodels/auth_viewmodel_test.dart</td><td class="mono">8</td><td>Login, cadastro com auto-login, logout e mapeamento de erros.</td></tr>
+      <tr><td class="mono">data/repositories/mock_chat_repository_test.dart</td><td class="mono">7</td><td>Correspondência por palavra-chave e resposta genérica.</td></tr>
+      <tr><td class="mono">presentation/viewmodels/chat_viewmodel_test.dart</td><td class="mono">7</td><td>Envio, indicador de digitação, entrada vazia e degradação em erro.</td></tr>
+      <tr><td class="mono">core/constants/api_constants_test.dart</td><td class="mono">6</td><td>Base URL e integridade do mapa de períodos.</td></tr>
+      <tr><td class="mono">presentation/viewmodels/home_viewmodel_test.dart</td><td class="mono">6</td><td>Carga, watchlist vazia, troca de período, reordenação e erro.</td></tr>
+      <tr><td class="mono">presentation/views/login_view_test.dart</td><td class="mono">5</td><td>Renderização, validação de formulário e interação de submissão.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>15.2 Abordagem</h3>
+  <ul>
+    <li><strong>Dublês sobre abstrações do domínio.</strong> <code>test/helpers/fake_repositories.dart</code> concentra os <em>mocks</em> — <code>MockAuthRepository</code>, <code>MockAssetRepository</code>, <code>MockWatchlistRepository</code>, <code>MockChatRepository</code> e <code>MockFlutterSecureStorage</code>. Todos implementam as interfaces do domínio, não as classes concretas, o que valida o contrato e mantém os testes indiferentes a mudanças de implementação.</li>
+    <li><strong>Mocktail sem geração de código.</strong> Dispensa passo de <code>build_runner</code> para atualizar dublês, reduzindo atrito ao alterar assinaturas.</li>
+    <li><strong>Isolamento por <code>ProviderContainer</code>.</strong> Cada teste monta seu próprio contêiner com sobrescritas e o descarta em <code>addTearDown</code>, garantindo ausência de estado compartilhado entre casos.</li>
+    <li><strong>Prioridade à lógica pura e à orquestração.</strong> A cobertura concentra-se em validadores, formatadores, construção de rotas e <em>view models</em> — as áreas onde defeitos são silenciosos e a verificação automatizada tem melhor retorno.</li>
+  </ul>
+
+  <h3>15.3 Lacunas</h3>
+  <table>
+    <thead><tr><th style="width:34%">Área</th><th style="width:14%">Situação</th><th>Consideração</th></tr></thead>
+    <tbody>
+      <tr><td>Testes de widget</td><td><span class="badge part">1 de 7 telas</span></td><td>Apenas <code>LoginView</code> é coberta. <code>test/widget_test.dart</code> está deliberadamente vazio, com comentário indicando que testes de UI serão adicionados quando os componentes estabilizarem.</td></tr>
+      <tr><td>Testes de integração</td><td><span class="badge no">Ausente</span></td><td>Não há diretório <code>integration_test/</code>; os fluxos ponta a ponta — cadastro → login → watchlist → gráficos — não têm verificação automatizada.</td></tr>
+      <tr><td>Repositórios HTTP</td><td><span class="badge no">Ausente</span></td><td>As implementações que usam Dio não são testadas contra um adaptador simulado; a desserialização de respostas reais não é verificada.</td></tr>
+      <tr><td>Relatório de cobertura</td><td><span class="badge no">Não configurado</span></td><td><code>flutter test --coverage</code> é executável, mas não há limiar definido nem publicação do relatório.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>15.4 Execução</h3>
+  <pre>flutter test                    # suíte completa
+flutter test --coverage         # gera coverage/lcov.info
+flutter test test/core/         # subconjunto por diretório
+flutter analyze                 # análise estática</pre>
+</section>
+
+<!-- ══════════════════════════ 16 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">16</span>Registro de Decisões Técnicas</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">Consolidação das decisões estruturais, com alternativas consideradas e o custo assumido em cada caso.</p>
+
+  <table>
+    <thead><tr><th style="width:5%">#</th><th style="width:22%">Decisão</th><th style="width:37%">Motivação</th><th>Alternativa preterida e custo assumido</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="mono">01</td><td><strong>Clean Architecture em 3 camadas</strong></td>
+        <td>Isola a UI dos detalhes de transporte e permite substituir implementações sem tocar na apresentação — condição para testar <em>view models</em> sem rede.</td>
+        <td>Arquitetura em camada única. Rejeitada: acoplaria as telas ao Dio e inviabilizaria os testes de <em>view model</em>.</td>
+      </tr>
+      <tr>
+        <td class="mono">02</td><td><strong>Modelos de dados compartilhados com o domínio</strong></td>
+        <td>O modelo de leitura do cliente espelha o contrato da API; entidades separadas com mapeadores dobrariam o código sem isolar comportamento.</td>
+        <td>Entidades de domínio + <em>mappers</em>. Custo assumido: mudanças de <em>schema</em> no backend propagam até a apresentação.</td>
+      </tr>
+      <tr>
+        <td class="mono">03</td><td><strong>Riverpod como DI e estado</strong></td>
+        <td>Resolução segura em tempo de compilação, sobrescrita trivial em testes, sem <em>singleton</em> global.</td>
+        <td>Provider + GetIt. Rejeitada: dois mecanismos para um problema, com registro global mutável.</td>
+      </tr>
+      <tr>
+        <td class="mono">04</td><td><strong><code>StateNotifier</code> em vez de <code>AsyncNotifier</code></strong></td>
+        <td>Estado explícito com múltiplos sinalizadores (<code>loading</code>, <code>refreshing</code>, <code>newsLoading</code>) que <code>AsyncValue</code> não modela naturalmente.</td>
+        <td>API moderna do Riverpod. Custo assumido: dívida frente à direção do ecossistema; migração mecânica pendente.</td>
+      </tr>
+      <tr>
+        <td class="mono">05</td><td><strong>Freezed + json_serializable</strong></td>
+        <td>Imutabilidade, igualdade estrutural e serialização sem código manual sujeito a divergência silenciosa.</td>
+        <td>Classes escritas à mão. Rejeitada: <code>copyWith</code> e <code>==</code> manuais são fonte recorrente de defeito.</td>
+      </tr>
+      <tr>
+        <td class="mono">06</td><td><strong>Dio com interceptador</strong></td>
+        <td>Injeção de token e tratamento de 401 em ponto único; nenhum repositório conhece autenticação.</td>
+        <td><code>package:http</code>. Rejeitada: exigiria repetir cabeçalhos e verificação de status em cada chamada.</td>
+      </tr>
+      <tr>
+        <td class="mono">07</td><td><strong>Guarda de rota assíncrona</strong></td>
+        <td>Decisão sempre baseada no estado real da credencial, inclusive após limpeza pelo interceptador.</td>
+        <td>Sessão em memória com <code>refreshListenable</code>. Custo assumido: uma leitura de I/O por navegação.</td>
+      </tr>
+      <tr>
+        <td class="mono">08</td><td><strong><code>StatefulShellRoute.indexedStack</code></strong></td>
+        <td>Preserva pilha e rolagem por aba, com URL sincronizada, sem gerência manual de índice.</td>
+        <td><code>IndexedStack</code> sob rota única. Rejeitada: exigiria sincronizar estado e URL manualmente.</td>
+      </tr>
+      <tr>
+        <td class="mono">09</td><td><strong>Base URL por <code>dart-define</code></strong></td>
+        <td>Um único artefato de código serve todos os ambientes; nenhum segredo de ambiente versionado.</td>
+        <td>Arquivo <code>.env</code>. Rejeitada: adiciona dependência e um arquivo a mais no fluxo de build.</td>
+      </tr>
+      <tr>
+        <td class="mono">10</td><td><strong>Separação SecureStorage / SharedPreferences</strong></td>
+        <td>Dados sensíveis sob cifra do sistema; preferências em armazenamento simples, com leitura síncrona após inicialização.</td>
+        <td>Tudo em armazenamento seguro. Rejeitada: sobrecarga desnecessária para preferência de tema.</td>
+      </tr>
+      <tr>
+        <td class="mono">11</td><td><strong>Carga paralela na Home</strong></td>
+        <td><code>Future.wait</code> faz a latência tender ao maior tempo individual, e não à soma das chamadas.</td>
+        <td>Requisições sequenciais. Rejeitada: tempo de carga cresceria linearmente com o tamanho da watchlist.</td>
+      </tr>
+      <tr>
+        <td class="mono">12</td><td><strong>Notícias fora do caminho crítico</strong></td>
+        <td>Cotações e gráficos renderizam sem esperar o <em>endpoint</em> mais lento e menos essencial.</td>
+        <td>Carga única aguardando tudo. Rejeitada: a informação principal ficaria refém da secundária.</td>
+      </tr>
+      <tr>
+        <td class="mono">13</td><td><strong>Sincronização diferencial da watchlist</strong></td>
+        <td>No máximo duas requisições ao salvar, independentemente do número de alterações.</td>
+        <td>Uma requisição por toque. Rejeitada: tráfego excessivo e estado inconsistente em falha parcial.</td>
+      </tr>
+      <tr>
+        <td class="mono">14</td><td><strong>Repositório de chat simulado</strong></td>
+        <td>Permite desenvolver e validar a UI de conversa antes da existência do serviço de IA, atrás do contrato definitivo.</td>
+        <td>Adiar a funcionalidade. Rejeitada: a UI é substancial e não deveria bloquear em dependência externa.</td>
+      </tr>
+      <tr>
+        <td class="mono">15</td><td><strong>Erros por exceção, sem <code>Result</code></strong></td>
+        <td>Menos cerimônia; cada <em>view model</em> traduz a falha no seu <code>catch</code> para uma mensagem de usuário.</td>
+        <td><code>Either</code>/<code>Result</code>. Custo assumido: as assinaturas não declaram as falhas possíveis.</td>
+      </tr>
+      <tr>
+        <td class="mono">16</td><td><strong>Provider colocado junto da implementação</strong></td>
+        <td>Definição próxima do uso; sem arquivo central que acople todos os módulos.</td>
+        <td>Arquivo único de injeção. Rejeitada: ponto de acoplamento global e conflitos frequentes de merge.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════════════════════════ 17 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">17</span>Build, Configuração e Distribuição</h2>
+  <div class="h2rule"></div>
+
+  <h3>17.1 Preparação do ambiente</h3>
+  <pre>flutter pub get
+dart run build_runner build --delete-conflicting-outputs   # freezed + json_serializable
+flutter gen-l10n                                            # localizações</pre>
+  <p>A etapa de <code>build_runner</code> é <strong>obrigatória</strong> após clonar o repositório ou alterar qualquer modelo: os arquivos <code>*.freezed.dart</code> e <code>*.g.dart</code> são gerados e não devem ser editados à mão.</p>
+
+  <h3>17.2 Configuração de ambiente</h3>
+  <p>A única variável de ambiente é a origem da API, lida em tempo de compilação:</p>
+  <pre># desenvolvimento (usa o padrão http://localhost:8000)
+flutter run
+
+# ambiente remoto
+flutter run --dart-define=API_BASE=https://api.exemplo.com
+
+# release Android
+flutter build apk --release --dart-define=API_BASE=https://api.exemplo.com
+
+# release iOS
+flutter build ipa --release --dart-define=API_BASE=https://api.exemplo.com</pre>
+  <p>Por ser <code>String.fromEnvironment</code> com <code>const</code>, o valor é resolvido na compilação e sujeito a <em>tree shaking</em> — não há custo de leitura em tempo de execução, e o valor não pode ser alterado sem novo build.</p>
+
+  <h3>17.3 Alvos de compilação</h3>
+  <table>
+    <thead><tr><th style="width:20%">Plataforma</th><th style="width:26%">Configuração</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td>Android</td><td class="mono">com.example.easy_finance</td><td>compileSdk, minSdk e targetSdk herdados dos padrões do Flutter. O <em>application id</em> precisa ser alterado antes da publicação.</td></tr>
+      <tr><td>iOS</td><td class="mono">Deployment target 13.0</td><td><code>Runner.xcworkspace</code> configurado; requer assinatura e perfil de provisionamento.</td></tr>
+      <tr><td>Web</td><td class="mono">web/index.html</td><td>Manifesto e ícones presentes; layout não otimizado para telas largas.</td></tr>
+      <tr><td>Windows / macOS / Linux</td><td class="mono">CMake / Xcode</td><td><em>Runners</em> gerados e funcionais; sem ajuste específico de UI.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>17.4 Recomendações para o pipeline de release</h3>
+  <ol>
+    <li>Fixar <code>API_BASE</code> em origem <strong>HTTPS</strong> na configuração do pipeline, jamais dependendo do <em>fallback</em> local.</li>
+    <li>Habilitar ofuscação: <code>--obfuscate --split-debug-info=build/symbols</code>, arquivando os símbolos para desofuscação de <em>stack traces</em>.</li>
+    <li>Alterar o <em>application id</em> Android de <code>com.example.*</code> para o domínio da organização.</li>
+    <li>Executar <code>flutter analyze</code> e <code>flutter test</code> como etapas bloqueantes antes do empacotamento.</li>
+    <li>Versionar o incremento de <code>version:</code> em <code>pubspec.yaml</code> junto ao artefato gerado.</li>
+  </ol>
+</section>
+
+<!-- ══════════════════════════ 18 ══════════════════════════ -->
+<section class="section">
+  <h2><span class="num">18</span>Limitações Conhecidas e Roadmap</h2>
+  <div class="h2rule"></div>
+
+  <p class="lead">As limitações abaixo são conhecidas e deliberadas no estado atual do produto. Estão listadas com o impacto correspondente para permitir priorização informada.</p>
+
+  <h3>18.1 Limitações</h3>
+  <table>
+    <thead><tr><th style="width:28%">Limitação</th><th style="width:12%">Impacto</th><th>Detalhe e caminho de resolução</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Assistente sem IA real</strong></td><td><span class="badge part">Funcional</span></td><td>Respostas provêm de dicionário local por palavra-chave. Resolução: nova implementação de <code>ChatRepository</code> e troca de uma linha em <code>chatRepositoryProvider</code>.</td></tr>
+      <tr><td><strong>i18n parcial</strong></td><td><span class="badge part">UX</span></td><td>Rótulos de navegação, títulos de seção e mensagens de erro embutidos em português. Requer externalização para <code>.arb</code> e decisão sobre chaves de erro nos <em>view models</em>.</td></tr>
+      <tr><td><strong>Sem <em>refresh token</em></strong></td><td><span class="badge part">UX</span></td><td>Sessão expirada exige reautenticação manual. Depende de suporte no backend.</td></tr>
+      <tr><td><strong>Sem certificate pinning</strong></td><td><span class="badge no">Segurança</span></td><td>Bloqueante para distribuição pública. Implementável via <code>badCertificateCallback</code> do Dio.</td></tr>
+      <tr><td><strong>Cobertura de widget baixa</strong></td><td><span class="badge part">Qualidade</span></td><td>Seis das sete telas sem teste de widget; nenhum teste de integração.</td></tr>
+      <tr><td><strong>Endpoints ociosos</strong></td><td><span class="badge part">Escopo</span></td><td><code>getDividends</code>, <code>getFinancials</code> e exclusão de conta implementados, sem consumidor.</td></tr>
+      <tr><td><strong>Sem paginação na busca</strong></td><td><span class="badge part">Escala</span></td><td><code>GET /assets?search=</code> retorna a lista completa; consultas amplas podem gerar resposta volumosa.</td></tr>
+      <tr><td><strong>Ausência de observabilidade</strong></td><td><span class="badge no">Operação</span></td><td>Sem relatório de <em>crash</em> ou telemetria; falhas em produção não são visíveis. Recomenda-se Crashlytics ou Sentry.</td></tr>
+      <tr><td><strong>Layout não responsivo</strong></td><td><span class="badge part">Plataforma</span></td><td>Dimensões calibradas para telas de telefone; alvos web e desktop compilam mas não aproveitam a largura disponível.</td></tr>
+      <tr><td><strong><em>Application id</em> de exemplo</strong></td><td><span class="badge no">Publicação</span></td><td><code>com.example.easy_finance</code> impede publicação nas lojas. Alteração obrigatória.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>18.2 Evolução sugerida</h3>
+
+  <h4>Curto prazo — habilitar publicação</h4>
+  <ol>
+    <li>Alterar o <em>application id</em> Android e configurar assinatura de release em ambas as plataformas.</li>
+    <li>Fixar <code>API_BASE</code> HTTPS e habilitar ofuscação no pipeline.</li>
+    <li>Concluir a externalização de <em>strings</em> para os arquivos <code>.arb</code>.</li>
+    <li>Integrar relatório de <em>crash</em>.</li>
+  </ol>
+
+  <h4>Médio prazo — completar o produto</h4>
+  <ol>
+    <li>Construir a tela de detalhe do ativo, consumindo <code>getFinancials</code> e <code>getDividends</code> já disponíveis.</li>
+    <li>Substituir <code>MockChatRepository</code> por integração com serviço de IA, mantendo o contrato existente.</li>
+    <li>Ampliar a cobertura de testes de widget e introduzir <code>integration_test/</code> para o fluxo principal.</li>
+    <li>Implementar exclusão de conta, consumindo o <em>endpoint</em> já mapeado.</li>
+  </ol>
+
+  <h4>Longo prazo — escala e resiliência</h4>
+  <ol>
+    <li>Migrar de <code>StateNotifier</code> para <code>AsyncNotifier</code>, aproveitando <code>riverpod_generator</code>.</li>
+    <li>Introduzir paginação na busca de ativos.</li>
+    <li>Avaliar atualização de cotações em tempo real por WebSocket, substituindo o modelo de <em>pull</em>.</li>
+    <li>Adotar layout adaptativo para tablet, web e desktop.</li>
+    <li>Implementar <em>certificate pinning</em> e, quando disponível no backend, rotação de token.</li>
+  </ol>
+
+  <footer class="docfoot">
+    <strong>Finance Pro — Especificação Técnica</strong> · versão 1.0.0+1 · 13/08/2026<br>
+    Documento derivado da análise direta do código-fonte do repositório <code>easy_finance</code> (branch <code>main</code>). Situações marcadas como ausentes ou parciais refletem o estado verificado do código na data de emissão.
+  </footer>
+</section>
+
+</body>
+</html>
