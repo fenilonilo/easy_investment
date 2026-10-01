@@ -319,6 +319,360 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finance AI'**
   String get aiAssistant;
+
+  /// No description provided for @configTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get configTab;
+
+  /// No description provided for @aiChat.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Chat'**
+  String get aiChat;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @darkModeOn.
+  ///
+  /// In en, this message translates to:
+  /// **'On (OLED)'**
+  String get darkModeOn;
+
+  /// No description provided for @darkModeOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get darkModeOff;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @privacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacy;
+
+  /// No description provided for @privacyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your token and profile are stored securely on this device'**
+  String get privacyDesc;
+
+  /// No description provided for @languageName.
+  ///
+  /// In en, this message translates to:
+  /// **'English (US)'**
+  String get languageName;
+
+  /// No description provided for @logoutAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out of account'**
+  String get logoutAccount;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to log out?'**
+  String get logoutConfirm;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @emptyWatchlist.
+  ///
+  /// In en, this message translates to:
+  /// **'Your watchlist is empty'**
+  String get emptyWatchlist;
+
+  /// No description provided for @quoteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load quote'**
+  String get quoteError;
+
+  /// No description provided for @charts.
+  ///
+  /// In en, this message translates to:
+  /// **'Charts'**
+  String get charts;
+
+  /// No description provided for @profileError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load profile.'**
+  String get profileError;
+
+  /// No description provided for @searchAssetsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search assets (e.g. AAPL, BTC)...'**
+  String get searchAssetsHint;
+
+  /// No description provided for @noAssetsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No assets found.'**
+  String get noAssetsFound;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get welcomeBack;
+
+  /// No description provided for @loginToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to continue'**
+  String get loginToContinue;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? '**
+  String get noAccount;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signUp;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @yourInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Your information'**
+  String get yourInfo;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get fullName;
+
+  /// No description provided for @selectBirthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your birth date'**
+  String get selectBirthDate;
+
+  /// No description provided for @haveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? '**
+  String get haveAccount;
+
+  /// No description provided for @assetAdvisor.
+  ///
+  /// In en, this message translates to:
+  /// **'Asset Advisor'**
+  String get assetAdvisor;
+
+  /// No description provided for @liveMarketData.
+  ///
+  /// In en, this message translates to:
+  /// **'Live market data'**
+  String get liveMarketData;
+
+  /// No description provided for @thinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking…'**
+  String get thinking;
+
+  /// No description provided for @previousChats.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous chats'**
+  String get previousChats;
+
+  /// No description provided for @newChat.
+  ///
+  /// In en, this message translates to:
+  /// **'New chat'**
+  String get newChat;
+
+  /// No description provided for @askAboutAsset.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about an asset...'**
+  String get askAboutAsset;
+
+  /// No description provided for @charLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit of {max} characters reached'**
+  String charLimitReached(int max);
+
+  /// No description provided for @retryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get retryAgain;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @deleteChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete chat'**
+  String get deleteChat;
+
+  /// No description provided for @deleteChatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete chat?'**
+  String get deleteChatTitle;
+
+  /// No description provided for @deleteChatBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This chat will be deleted and cannot be recovered.'**
+  String get deleteChatBody;
+
+  /// No description provided for @deleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete.'**
+  String get deleteFailed;
+
+  /// No description provided for @loadChatsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your chats.'**
+  String get loadChatsFailed;
+
+  /// No description provided for @noChatsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats here yet.'**
+  String get noChatsYet;
+
+  /// No description provided for @exchanges.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} exchange} other{{count} exchanges}}'**
+  String exchanges(int count);
+
+  /// No description provided for @splashTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your investments, under control.'**
+  String get splashTagline;
+
+  /// No description provided for @chartError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load chart'**
+  String get chartError;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get noData;
+
+  /// No description provided for @dirUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Up'**
+  String get dirUp;
+
+  /// No description provided for @dirFlat.
+  ///
+  /// In en, this message translates to:
+  /// **'Flat'**
+  String get dirFlat;
+
+  /// No description provided for @dirDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Down'**
+  String get dirDown;
+
+  /// No description provided for @field.
+  ///
+  /// In en, this message translates to:
+  /// **'Field'**
+  String get field;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} is required'**
+  String fieldRequired(String label);
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get emailRequired;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email'**
+  String get emailInvalid;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
+
+  /// No description provided for @passwordMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum 6 characters'**
+  String get passwordMin;
+
+  /// No description provided for @chatGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi! I\'m your Asset Advisor. I can analyze your watchlist, fetch live quotes, dividends and news, and explain indicators. What would you like to know?'**
+  String get chatGreeting;
+
+  /// No description provided for @personalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Information'**
+  String get personalInfo;
+
+  /// No description provided for @watchlistHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search and select the assets you want to track.'**
+  String get watchlistHint;
 }
 
 class _AppLocalizationsDelegate

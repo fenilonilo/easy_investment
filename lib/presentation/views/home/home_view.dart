@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -60,9 +61,10 @@ class HomeView extends ConsumerWidget {
 
   Widget _buildBody(BuildContext context, HomeState state,
       HomeNotifier notifier, ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     if (state.loading) return const AssetCardShimmer();
 
-    if (state.error != null) {
+    if (state.error != null && state.quotes.isEmpty) {
       return ErrorView(
         message: state.error!,
         onRetry: () => notifier.load(),
@@ -72,10 +74,9 @@ class HomeView extends ConsumerWidget {
     if (state.quotes.isEmpty) {
       return EmptyState(
         icon: Icons.show_chart_rounded,
-        title: 'Sua watchlist está vazia',
-        subtitle:
-            'Adicione ativos na aba Perfil para começar a monitorar.',
-        buttonLabel: 'Adicionar seu primeiro ativo',
+        title: l10n.emptyWatchlist,
+        subtitle: l10n.noAssetsSubtitle,
+        buttonLabel: l10n.addFirstAsset,
         onButtonTap: () {
           HapticFeedback.lightImpact();
           context.go('/profile');
@@ -86,13 +87,21 @@ class HomeView extends ConsumerWidget {
     return CustomScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
+        if (state.error != null)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Text(state.error!,
+                  style: TextStyle(color: theme.colorScheme.error)),
+            ),
+          ),
         // Watchlist header
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Row(
               children: [
-                Text('Watchlist',
+                Text(l10n.watchlist,
                     style: theme.textTheme.titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold)),
                 const Spacer(),
@@ -111,20 +120,59 @@ class HomeView extends ConsumerWidget {
           child: ReorderableListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
             onReorderStart: (_) => HapticFeedback.mediumImpact(),
             onReorder: notifier.reorder,
             itemCount: state.quotes.length,
             itemBuilder: (_, i) {
               final q = state.quotes[i];
-              return AssetCardWidget(key: ValueKey(q.ticker), quote: q);
+              return AssetCardWidget(
+                  key: ValueKey(q.ticker), quote: q, dragIndex: i);
             },
           ),
         ),
+        // Ativos cuja cotação falhou
+        if (state.failedTickers.isNotEmpty)
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                for (final t in state.failedTickers)
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 5),
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error_outline_rounded,
+                            color: theme.colorScheme.error, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(t,
+                                  style: theme.textTheme.titleSmall
+                                      ?.copyWith(fontWeight: FontWeight.bold)),
+                              Text(l10n.quoteError,
+                                  style: theme.textTheme.bodySmall),
+                            ],
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => notifier.load(refresh: true),
+                          child: Text(l10n.retry),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
         // Charts
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text('Gráficos',
+            child: Text(l10n.charts,
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
           ),
@@ -133,7 +181,7 @@ class HomeView extends ConsumerWidget {
           delegate: SliverChildBuilderDelegate(
             (_, i) {
               final q = state.quotes[i];
-              final hist = state.history[q.ticker] ?? [];
+              final hist = state.history[q.ticker];
               return HistoricalChartCard(
                 quote: q,
                 history: hist,
@@ -152,7 +200,7 @@ class HomeView extends ConsumerWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-                child: Text('Notícias',
+                child: Text(l10n.news,
                     style: theme.textTheme.titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold)),
               ),
@@ -161,7 +209,18 @@ class HomeView extends ConsumerWidget {
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: ShimmerBox(height: 110, radius: 16),
                     )
-                  : NewsTicker(news: state.news),
+                  : state.news.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            state.newsError
+                                ? 'Não foi possível carregar as notícias.'
+                                : 'Nenhuma notícia disponível no momento.',
+                            style: theme.textTheme.bodySmall
+                                ?.copyWith(color: AppColors.textSecondary),
+                          ),
+                        )
+                      : NewsTicker(news: state.news),
               const SizedBox(height: 24),
             ],
           ),

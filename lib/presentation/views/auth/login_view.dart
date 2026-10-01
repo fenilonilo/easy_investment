@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -49,6 +50,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.status == AuthStatus.loading;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -77,11 +79,11 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  Text('Bem-vindo de volta',
+                  Text(l10n.welcomeBack,
                       style: theme.textTheme.headlineSmall
                           ?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
-                  Text('Faça login para continuar',
+                  Text(l10n.loginToContinue,
                       style: theme.textTheme.bodyMedium?.copyWith(
                           color: AppColors.textSecondary)),
                   const SizedBox(height: 32),
@@ -89,9 +91,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    validator: Validators.email,
-                    decoration: const InputDecoration(
-                      labelText: 'E-mail',
+                    validator: (v) => Validators.email(v, l10n),
+                    decoration: InputDecoration(
+                      labelText: l10n.email,
                       prefixIcon: Icon(Icons.email_outlined),
                     ),
                   ),
@@ -101,9 +103,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     obscureText: _obscure,
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
-                    validator: Validators.password,
+                    validator: (v) => Validators.password(v, l10n),
                     decoration: InputDecoration(
-                      labelText: 'Senha',
+                      labelText: l10n.password,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -125,20 +127,20 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           )
                         : ElevatedButton(
                             onPressed: _submit,
-                            child: const Text('Entrar'),
+                            child: Text(l10n.login),
                           ),
                   ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Não tem conta? '),
+                      Text(l10n.noAccount),
                       TextButton(
                         onPressed: () {
                           HapticFeedback.lightImpact();
                           context.push('/register');
                         },
-                        child: const Text('Cadastre-se'),
+                        child: Text(l10n.signUp),
                       ),
                     ],
                   ),

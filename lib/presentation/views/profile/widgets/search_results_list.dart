@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/shimmer_loading.dart';
 import '../../../../data/models/asset_model.dart';
@@ -6,6 +7,8 @@ import '../../../../data/models/asset_model.dart';
 class SearchResultsList extends StatelessWidget {
   final List<AssetModel> results;
   final bool searching;
+  final String? searchError;
+  final bool hasQuery;
   final Set<String> selectedTickers;
   final void Function(AssetModel) onAdd;
 
@@ -13,6 +16,8 @@ class SearchResultsList extends StatelessWidget {
     super.key,
     required this.results,
     required this.searching,
+    this.searchError,
+    this.hasQuery = false,
     required this.selectedTickers,
     required this.onAdd,
   });
@@ -30,7 +35,21 @@ class SearchResultsList extends StatelessWidget {
         ],
       );
     }
-    if (results.isEmpty) return const SizedBox.shrink();
+    if (searchError != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(searchError!,
+            style: const TextStyle(color: AppColors.textSecondary)),
+      );
+    }
+    if (results.isEmpty) {
+      if (!hasQuery) return const SizedBox.shrink();
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(AppLocalizations.of(context)!.noAssetsFound,
+            style: TextStyle(color: AppColors.textSecondary)),
+      );
+    }
 
     return ListView.separated(
       shrinkWrap: true,

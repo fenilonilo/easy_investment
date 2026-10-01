@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -32,6 +33,25 @@ class _SessionHistorySheetState extends ConsumerState<SessionHistorySheet> {
   }
 
   Future<void> _apagar(AiSessionInfo s) async {
+    final l10n = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteChatTitle),
+        content: Text(l10n.deleteChatBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
     try {
       await ref.read(chatNotifierProvider.notifier).apagarConversa(s.sessionId);
       if (!mounted) return;
@@ -41,7 +61,7 @@ class _SessionHistorySheetState extends ConsumerState<SessionHistorySheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            e is AiApiException ? e.mensagemAmigavel : 'Falha ao apagar.',
+            e is AiApiException ? e.mensagemAmigavel : l10n.deleteFailed,
           ),
         ),
       );
@@ -50,21 +70,22 @@ class _SessionHistorySheetState extends ConsumerState<SessionHistorySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.65,
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: Row(
                 children: [
-                  Icon(Icons.history_rounded, size: 20),
-                  SizedBox(width: 10),
+                  const Icon(Icons.history_rounded, size: 20),
+                  const SizedBox(width: 10),
                   Text(
-                    'Conversas anteriores',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    l10n.previousChats,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -83,15 +104,15 @@ class _SessionHistorySheetState extends ConsumerState<SessionHistorySheet> {
                       icone: Icons.error_outline_rounded,
                       texto: e is AiApiException
                           ? e.mensagemAmigavel
-                          : 'Não foi possível carregar suas conversas.',
+                          : l10n.loadChatsFailed,
                       acao: _recarregar,
                     );
                   }
                   final sessions = snap.data ?? const <AiSessionInfo>[];
                   if (sessions.isEmpty) {
-                    return const _Aviso(
+                    return _Aviso(
                       icone: Icons.forum_outlined,
-                      texto: 'Nenhuma conversa por aqui ainda.',
+                      texto: l10n.noChatsYet,
                     );
                   }
                   return ListView.separated(
@@ -106,14 +127,14 @@ class _SessionHistorySheetState extends ConsumerState<SessionHistorySheet> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: Text(
-                          _subtitulo(s),
+                          _subtitulo(s, l10n),
                           style: const TextStyle(
                               fontSize: 11, color: AppColors.textSecondary),
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete_outline_rounded,
                               size: 20),
-                          tooltip: 'Apagar conversa',
+                          tooltip: l10n.deleteChat,
                           onPressed: () => _apagar(s),
                         ),
                         onTap: () => Navigator.of(context).pop(s.sessionId),
@@ -129,8 +150,8 @@ class _SessionHistorySheetState extends ConsumerState<SessionHistorySheet> {
     );
   }
 
-  String _subtitulo(AiSessionInfo s) {
-    final trocas = '${s.runsCount} ${s.runsCount == 1 ? 'troca' : 'trocas'}';
+  String _subtitulo(AiSessionInfo s, AppLocalizations l10n) {
+    final trocas = l10n.exchanges(s.runsCount);
     final data = s.updatedAt;
     if (data == null) return trocas;
     return '$trocas • ${DateFormat('dd/MM HH:mm').format(data)}';
@@ -162,7 +183,7 @@ class _Aviso extends StatelessWidget {
             ),
             if (acao != null) ...[
               const SizedBox(height: 12),
-              TextButton(onPressed: acao, child: const Text('Tentar de novo')),
+              TextButton(onPressed: acao, child: Text(AppLocalizations.of(context)!.retryAgain)),
             ],
           ],
         ),

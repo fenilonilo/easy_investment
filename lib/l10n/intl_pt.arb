@@ -36,5 +36,85 @@
   "dividends": "Dividendos",
   "financials": "Financeiros",
   "typeMessage": "Digite uma mensagem...",
-  "aiAssistant": "IA Financeira"
+  "aiAssistant": "IA Financeira",
+  "configTab": "Config",
+  "aiChat": "IA Chat",
+  "appearance": "Aparência",
+  "darkModeOn": "Ativo (OLED)",
+  "darkModeOff": "Inativo",
+  "about": "Sobre",
+  "version": "Versão",
+  "privacy": "Privacidade",
+  "privacyDesc": "Seu token e perfil ficam salvos de forma segura neste dispositivo",
+  "languageName": "Português (BR)",
+  "logoutAccount": "Sair da conta",
+  "logoutConfirm": "Deseja realmente sair da sua conta?",
+  "cancel": "Cancelar",
+  "emptyWatchlist": "Sua watchlist está vazia",
+  "quoteError": "Erro ao carregar cotação",
+  "charts": "Gráficos",
+  "profileError": "Erro ao carregar perfil.",
+  "searchAssetsHint": "Buscar ativos (ex: AAPL, BTC)...",
+  "noAssetsFound": "Nenhum ativo encontrado.",
+  "welcomeBack": "Bem-vindo de volta",
+  "loginToContinue": "Faça login para continuar",
+  "noAccount": "Não tem conta? ",
+  "signUp": "Cadastre-se",
+  "createAccount": "Criar Conta",
+  "yourInfo": "Suas informações",
+  "fullName": "Nome completo",
+  "selectBirthDate": "Selecione sua data de nascimento",
+  "haveAccount": "Já tem conta? ",
+  "assetAdvisor": "Consultor de Ativos",
+  "liveMarketData": "Dados de mercado ao vivo",
+  "thinking": "Pensando…",
+  "previousChats": "Conversas anteriores",
+  "newChat": "Nova conversa",
+  "askAboutAsset": "Pergunte sobre um ativo...",
+  "charLimitReached": "Limite de {max} caracteres atingido",
+  "@charLimitReached": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "retryAgain": "Tentar de novo",
+  "delete": "Apagar",
+  "deleteChat": "Apagar conversa",
+  "deleteChatTitle": "Apagar conversa?",
+  "deleteChatBody": "Esta conversa será apagada e não poderá ser recuperada.",
+  "deleteFailed": "Falha ao apagar.",
+  "loadChatsFailed": "Não foi possível carregar suas conversas.",
+  "noChatsYet": "Nenhuma conversa por aqui ainda.",
+  "exchanges": "{count, plural, one{{count} troca} other{{count} trocas}}",
+  "@exchanges": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "splashTagline": "Seus investimentos, sob controle.",
+  "chartError": "Erro ao carregar o gráfico",
+  "noData": "Sem dados",
+  "dirUp": "Alta",
+  "dirFlat": "Estável",
+  "dirDown": "Baixa",
+  "field": "Campo",
+  "fieldRequired": "{label} obrigatório",
+  "@fieldRequired": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "emailRequired": "Email obrigatório",
+  "emailInvalid": "Email inválido",
+  "passwordRequired": "Senha obrigatória",
+  "passwordMin": "Mínimo 6 caracteres",
+  "chatGreeting": "Olá! Sou seu Consultor de Ativos. Posso analisar sua watchlist, buscar cotações, dividendos e notícias ao vivo, e explicar indicadores. O que deseja saber?",
+  "personalInfo": "Informações",
+  "watchlistHint": "Busque e selecione os ativos que deseja monitorar."
 }

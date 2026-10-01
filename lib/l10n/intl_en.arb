@@ -36,5 +36,85 @@
   "dividends": "Dividends",
   "financials": "Financials",
   "typeMessage": "Type a message...",
-  "aiAssistant": "Finance AI"
+  "aiAssistant": "Finance AI",
+  "configTab": "Settings",
+  "aiChat": "AI Chat",
+  "appearance": "Appearance",
+  "darkModeOn": "On (OLED)",
+  "darkModeOff": "Off",
+  "about": "About",
+  "version": "Version",
+  "privacy": "Privacy",
+  "privacyDesc": "Your token and profile are stored securely on this device",
+  "languageName": "English (US)",
+  "logoutAccount": "Log out of account",
+  "logoutConfirm": "Do you really want to log out?",
+  "cancel": "Cancel",
+  "emptyWatchlist": "Your watchlist is empty",
+  "quoteError": "Failed to load quote",
+  "charts": "Charts",
+  "profileError": "Failed to load profile.",
+  "searchAssetsHint": "Search assets (e.g. AAPL, BTC)...",
+  "noAssetsFound": "No assets found.",
+  "welcomeBack": "Welcome back",
+  "loginToContinue": "Log in to continue",
+  "noAccount": "Don't have an account? ",
+  "signUp": "Sign up",
+  "createAccount": "Create Account",
+  "yourInfo": "Your information",
+  "fullName": "Full name",
+  "selectBirthDate": "Select your birth date",
+  "haveAccount": "Already have an account? ",
+  "assetAdvisor": "Asset Advisor",
+  "liveMarketData": "Live market data",
+  "thinking": "Thinking…",
+  "previousChats": "Previous chats",
+  "newChat": "New chat",
+  "askAboutAsset": "Ask about an asset...",
+  "charLimitReached": "Limit of {max} characters reached",
+  "@charLimitReached": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "retryAgain": "Try again",
+  "delete": "Delete",
+  "deleteChat": "Delete chat",
+  "deleteChatTitle": "Delete chat?",
+  "deleteChatBody": "This chat will be deleted and cannot be recovered.",
+  "deleteFailed": "Failed to delete.",
+  "loadChatsFailed": "Could not load your chats.",
+  "noChatsYet": "No chats here yet.",
+  "exchanges": "{count, plural, one{{count} exchange} other{{count} exchanges}}",
+  "@exchanges": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "splashTagline": "Your investments, under control.",
+  "chartError": "Failed to load chart",
+  "noData": "No data",
+  "dirUp": "Up",
+  "dirFlat": "Flat",
+  "dirDown": "Down",
+  "field": "Field",
+  "fieldRequired": "{label} is required",
+  "@fieldRequired": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "emailRequired": "Email is required",
+  "emailInvalid": "Invalid email",
+  "passwordRequired": "Password is required",
+  "passwordMin": "Minimum 6 characters",
+  "chatGreeting": "Hi! I'm your Asset Advisor. I can analyze your watchlist, fetch live quotes, dividends and news, and explain indicators. What would you like to know?",
+  "personalInfo": "Information",
+  "watchlistHint": "Search and select the assets you want to track."
 }
