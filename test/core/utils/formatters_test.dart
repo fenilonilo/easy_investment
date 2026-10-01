@@ -2,6 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:easy_finance/core/utils/formatters.dart';
 
 void main() {
+  group('B23: Formatters.currency usa a moeda nativa do ativo', () {
+    test('BRL mostra R\$ e nao \$', () {
+      final out = Formatters.currency(49.12, 'BRL');
+      expect(out, contains('R\$'));
+      expect(out, contains('49,12'));
+    });
+    test('USD continua com \$', () {
+      expect(Formatters.currency(333.02, 'USD'), '\$333.02');
+    });
+  });
+
   group('Formatters.currency', () {
     test('formata zero corretamente', () {
       expect(Formatters.currency(0), '\$0.00');

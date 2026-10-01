@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +47,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
     if (!_formKey.currentState!.validate()) return;
     if (_birthDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecione sua data de nascimento')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.selectBirthDate)),
       );
       return;
     }
@@ -78,9 +79,10 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
     final isLoading =
         ref.watch(authNotifierProvider).status == AuthStatus.loading;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Criar Conta')),
+      appBar: AppBar(title: Text(l10n.createAccount)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -89,7 +91,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Suas informações',
+                Text(l10n.yourInfo,
                     style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 24),
@@ -97,9 +99,9 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                   controller: _nameCtrl,
                   textInputAction: TextInputAction.next,
                   textCapitalization: TextCapitalization.words,
-                  validator: (v) => Validators.required(v, 'Nome'),
-                  decoration: const InputDecoration(
-                    labelText: 'Nome completo',
+                  validator: (v) => Validators.required(v, l10n.name, l10n),
+                  decoration: InputDecoration(
+                    labelText: l10n.fullName,
                     prefixIcon: Icon(Icons.person_outline),
                   ),
                 ),
@@ -108,9 +110,9 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                   controller: _emailCtrl,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  validator: Validators.email,
-                  decoration: const InputDecoration(
-                    labelText: 'E-mail',
+                  validator: (v) => Validators.email(v, l10n),
+                  decoration: InputDecoration(
+                    labelText: l10n.email,
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                 ),
@@ -119,9 +121,9 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                   controller: _pwdCtrl,
                   obscureText: _obscure,
                   textInputAction: TextInputAction.done,
-                  validator: Validators.password,
+                  validator: (v) => Validators.password(v, l10n),
                   decoration: InputDecoration(
-                    labelText: 'Senha',
+                    labelText: l10n.password,
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(_obscure
@@ -141,7 +143,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                       validator: (_) =>
                           _birthDate == null ? 'Selecione a data' : null,
                       decoration: InputDecoration(
-                        labelText: 'Data de Nascimento',
+                        labelText: l10n.birthDate,
                         prefixIcon: const Icon(Icons.calendar_today_outlined),
                         hintText: _birthDate == null
                             ? 'Selecionar...'
@@ -155,18 +157,18 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _investorProfile,
-                  decoration: const InputDecoration(
-                    labelText: 'Perfil de Investidor',
+                  decoration: InputDecoration(
+                    labelText: l10n.investorProfile,
                     prefixIcon: Icon(Icons.show_chart_rounded),
                   ),
-                  items: const [
+                  items: [
                     DropdownMenuItem(
                         value: 'CONSERVATIVE',
-                        child: Text('Conservador')),
+                        child: Text(l10n.conservative)),
                     DropdownMenuItem(
-                        value: 'MODERATE', child: Text('Moderado')),
+                        value: 'MODERATE', child: Text(l10n.moderate)),
                     DropdownMenuItem(
-                        value: 'AGGRESSIVE', child: Text('Agressivo')),
+                        value: 'AGGRESSIVE', child: Text(l10n.aggressive)),
                   ],
                   onChanged: (v) {
                     HapticFeedback.selectionClick();
@@ -180,20 +182,20 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                       ? const Center(child: CircularProgressIndicator())
                       : ElevatedButton(
                           onPressed: _submit,
-                          child: const Text('Criar Conta'),
+                          child: Text(l10n.createAccount),
                         ),
                 ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Já tem conta? '),
+                    Text(l10n.haveAccount),
                     TextButton(
                       onPressed: () {
                         HapticFeedback.lightImpact();
                         context.pop();
                       },
-                      child: const Text('Entrar'),
+                      child: Text(l10n.login),
                     ),
                   ],
                 ),

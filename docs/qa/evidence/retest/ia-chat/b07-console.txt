@@ -1,0 +1,38 @@
+{
+ "console": [
+  "[debug] Injecting <script> tag. Using callback.",
+  "[info] DDC is about to load 1/2 scripts with pool size = 1000",
+  "[info] DDC is about to load 855/855 scripts with pool size = 1000",
+  "[log] Starting application from main method in: org-dartlang-app:/web_entrypoint.dart.",
+  "[verbose] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o",
+  "[error] Access to image at 'https://www.google.com/s2/favicons?domain=apple.com&sz=128' from origin 'http://localhost:8080' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+  "[error] Failed to load resource: net::ERR_FAILED",
+  "[error] Access to image at 'https://www.google.com/s2/favicons?domain=petrobras.com.br&sz=128' from origin 'http://localhost:8080' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+  "[error] Failed to load resource: net::ERR_FAILED",
+  "-- shot t=30.1s",
+  "-- shot t=80.1s",
+  "-- shot t=86.0s",
+  "-- shot t=92.0s",
+  "-- shot t=100.0s"
+ ],
+ "pageerror": [],
+ "net": [
+  "> POST /auth/login",
+  "< 200 /auth/login",
+  "> GET /profile/watchlist",
+  "< 200 /profile/watchlist",
+  "> GET /assets/AAPL",
+  "> GET /assets/PETR4.SA",
+  "< 200 /assets/PETR4.SA",
+  "< 200 /assets/AAPL",
+  "> GET /assets/AAPL/history?period=1mo",
+  "> GET /assets/PETR4.SA/history?period=1mo",
+  "< 200 /assets/AAPL/history?period=1mo",
+  "< 200 /assets/PETR4.SA/history?period=1mo",
+  "> GET /assets/AAPL/news",
+  "> GET /assets/PETR4.SA/news",
+  "< 200 /assets/AAPL/news",
+  "< 200 /assets/PETR4.SA/news",
+  "> POST /ai/chat/stream"
+ ]
+}

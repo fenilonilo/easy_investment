@@ -1,0 +1,11 @@
+12.850 event: start
+12.906 data: {"session_id": "ba310877-97fd-43cb-aad0-24775fbf4fbb", "provider": "gemini", "model": "gemini-3.5-flash"}
+12.956 
+13.819 event: error
+13.892 data: {"detail": "{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n", "request_id": "6dfc7aee525b"}
+13.945 
+14.010 event: done
+14.074 data: {"session_id": "ba310877-97fd-43cb-aad0-24775fbf4fbb", "provider": "gemini", "model": "gemini-3.5-flash", "content": ""}
+14.125 
+14.178 
+14.237 TOTAL 1.003558s

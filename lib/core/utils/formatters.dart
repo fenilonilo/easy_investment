@@ -1,8 +1,12 @@
 import 'package:intl/intl.dart';
 
 class Formatters {
-  static String currency(double value) =>
-      NumberFormat.simpleCurrency(locale: 'en_US').format(value);
+  /// [code] e a moeda nativa do ativo (ISO 4217); o preco nao e convertido.
+  static String currency(double value, [String code = 'USD']) =>
+      NumberFormat.simpleCurrency(
+        locale: code == 'BRL' ? 'pt_BR' : 'en_US',
+        name: code,
+      ).format(value);
 
   static String date(String isoDate) {
     try {
@@ -25,6 +29,16 @@ class Formatters {
     }
   }
 
-  static String directionLabel(String direction) =>
-      direction.toLowerCase() == 'subindo' ? 'up' : 'down';
+  /// 'up' | 'flat' | 'down'. Desconhecido cai em 'down' (comportamento legado).
+  static String directionLabel(String direction) {
+    switch (direction.toLowerCase()) {
+      case 'subindo':
+        return 'up';
+      case 'estável':
+      case 'estavel':
+        return 'flat';
+      default:
+        return 'down';
+    }
+  }
 }

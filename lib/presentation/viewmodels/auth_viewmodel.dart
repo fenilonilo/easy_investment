@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/secure_storage_service.dart';
+import '../../data/datasources/user_storage_service.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 
 enum AuthStatus { initial, loading, success, error }
@@ -59,6 +60,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> logout() async {
     final storage = _ref.read(secureStorageServiceProvider);
     await storage.clearToken();
+    await _ref.read(userStorageServiceProvider).clear();
     state = const AuthState();
   }
 

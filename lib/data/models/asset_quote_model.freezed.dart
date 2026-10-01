@@ -28,6 +28,7 @@ mixin _$AssetQuoteModel {
   @JsonKey(name: 'price_usd')
   double get priceUsd => throw _privateConstructorUsedError;
   String get direction => throw _privateConstructorUsedError;
+  String get currency => throw _privateConstructorUsedError;
 
   /// Serializes this AssetQuoteModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,6 +53,7 @@ abstract class $AssetQuoteModelCopyWith<$Res> {
     @JsonKey(name: 'icon_url') String iconUrl,
     @JsonKey(name: 'price_usd') double priceUsd,
     String direction,
+    String currency,
   });
 }
 
@@ -75,6 +77,7 @@ class _$AssetQuoteModelCopyWithImpl<$Res, $Val extends AssetQuoteModel>
     Object? iconUrl = null,
     Object? priceUsd = null,
     Object? direction = null,
+    Object? currency = null,
   }) {
     return _then(
       _value.copyWith(
@@ -98,6 +101,10 @@ class _$AssetQuoteModelCopyWithImpl<$Res, $Val extends AssetQuoteModel>
                 ? _value.direction
                 : direction // ignore: cast_nullable_to_non_nullable
                       as String,
+            currency: null == currency
+                ? _value.currency
+                : currency // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -119,6 +126,7 @@ abstract class _$$AssetQuoteModelImplCopyWith<$Res>
     @JsonKey(name: 'icon_url') String iconUrl,
     @JsonKey(name: 'price_usd') double priceUsd,
     String direction,
+    String currency,
   });
 }
 
@@ -141,6 +149,7 @@ class __$$AssetQuoteModelImplCopyWithImpl<$Res>
     Object? iconUrl = null,
     Object? priceUsd = null,
     Object? direction = null,
+    Object? currency = null,
   }) {
     return _then(
       _$AssetQuoteModelImpl(
@@ -164,6 +173,10 @@ class __$$AssetQuoteModelImplCopyWithImpl<$Res>
             ? _value.direction
             : direction // ignore: cast_nullable_to_non_nullable
                   as String,
+        currency: null == currency
+            ? _value.currency
+            : currency // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -178,6 +191,7 @@ class _$AssetQuoteModelImpl implements _AssetQuoteModel {
     @JsonKey(name: 'icon_url') required this.iconUrl,
     @JsonKey(name: 'price_usd') required this.priceUsd,
     required this.direction,
+    this.currency = 'USD',
   });
 
   factory _$AssetQuoteModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -195,10 +209,13 @@ class _$AssetQuoteModelImpl implements _AssetQuoteModel {
   final double priceUsd;
   @override
   final String direction;
+  @override
+  @JsonKey()
+  final String currency;
 
   @override
   String toString() {
-    return 'AssetQuoteModel(ticker: $ticker, name: $name, iconUrl: $iconUrl, priceUsd: $priceUsd, direction: $direction)';
+    return 'AssetQuoteModel(ticker: $ticker, name: $name, iconUrl: $iconUrl, priceUsd: $priceUsd, direction: $direction, currency: $currency)';
   }
 
   @override
@@ -212,13 +229,22 @@ class _$AssetQuoteModelImpl implements _AssetQuoteModel {
             (identical(other.priceUsd, priceUsd) ||
                 other.priceUsd == priceUsd) &&
             (identical(other.direction, direction) ||
-                other.direction == direction));
+                other.direction == direction) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, ticker, name, iconUrl, priceUsd, direction);
+  int get hashCode => Object.hash(
+    runtimeType,
+    ticker,
+    name,
+    iconUrl,
+    priceUsd,
+    direction,
+    currency,
+  );
 
   /// Create a copy of AssetQuoteModel
   /// with the given fields replaced by the non-null parameter values.
@@ -244,6 +270,7 @@ abstract class _AssetQuoteModel implements AssetQuoteModel {
     @JsonKey(name: 'icon_url') required final String iconUrl,
     @JsonKey(name: 'price_usd') required final double priceUsd,
     required final String direction,
+    final String currency,
   }) = _$AssetQuoteModelImpl;
 
   factory _AssetQuoteModel.fromJson(Map<String, dynamic> json) =
@@ -261,6 +288,8 @@ abstract class _AssetQuoteModel implements AssetQuoteModel {
   double get priceUsd;
   @override
   String get direction;
+  @override
+  String get currency;
 
   /// Create a copy of AssetQuoteModel
   /// with the given fields replaced by the non-null parameter values.

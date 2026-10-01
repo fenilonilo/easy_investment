@@ -1,3 +1,4 @@
+import 'package:easy_finance/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +38,7 @@ Widget buildTestApp() {
     overrides: [
       authNotifierProvider.overrideWith((ref) => FakeAuthNotifier()),
     ],
-    child: MaterialApp.router(routerConfig: router),
+    child: MaterialApp.router(localizationsDelegates: AppLocalizations.localizationsDelegates, supportedLocales: AppLocalizations.supportedLocales, locale: const Locale('pt'), routerConfig: router),
   );
 }
 

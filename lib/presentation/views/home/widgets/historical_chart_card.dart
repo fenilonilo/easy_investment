@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
@@ -8,7 +9,8 @@ import '../../../../data/models/history_point_model.dart';
 
 class HistoricalChartCard extends StatelessWidget {
   final AssetQuoteModel quote;
-  final List<HistoryPointModel> history;
+  /// null = falha ao carregar o histórico deste ativo.
+  final List<HistoryPointModel>? history;
   final String selectedPeriod;
   final List<String> periods;
   final void Function(String) onPeriodChanged;
@@ -24,12 +26,19 @@ class HistoricalChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isUp = quote.direction.toLowerCase() == 'subindo';
-    final lineColor = isUp ? AppColors.gain : AppColors.loss;
+    final l10n = AppLocalizations.of(context)!;
+    final dir = Formatters.directionLabel(quote.direction);
+    final isUp = dir == 'up';
+    final lineColor = isUp
+        ? AppColors.gain
+        : dir == 'flat'
+            ? AppColors.textSecondary
+            : AppColors.loss;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
 
-    final spots = history.asMap().entries.map((e) {
+    final points = history ?? const <HistoryPointModel>[];
+    final spots = points.asMap().entries.map((e) {
       return FlSpot(e.key.toDouble(), e.value.close);
     }).toList();
 
@@ -69,7 +78,7 @@ class HistoricalChartCard extends StatelessWidget {
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      Formatters.currency(quote.priceUsd),
+                      Formatters.currency(quote.priceUsd, quote.currency),
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: lineColor,
@@ -90,12 +99,14 @@ class HistoricalChartCard extends StatelessWidget {
                     Icon(
                       isUp
                           ? Icons.arrow_upward_rounded
-                          : Icons.arrow_downward_rounded,
+                          : dir == 'flat'
+                              ? Icons.remove_rounded
+                              : Icons.arrow_downward_rounded,
                       color: lineColor,
                       size: 14,
                     ),
                     Text(
-                      isUp ? 'Alta' : 'Baixa',
+                      isUp ? l10n.dirUp : dir == 'flat' ? l10n.dirFlat : l10n.dirDown,
                       style: TextStyle(
                         color: lineColor,
                         fontSize: 12,
@@ -126,7 +137,14 @@ class HistoricalChartCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    p,
+                    switch (p) {
+                      '1D' => l10n.period1D,
+                      '1W' => l10n.period1W,
+                      '1M' => l10n.period1M,
+                      '1Y' => l10n.period1Y,
+                      'ALL' => l10n.periodAll,
+                      _ => p,
+                    },
                     style: TextStyle(
                       color: selected
                           ? (isUp ? Colors.black : Colors.white)
@@ -144,10 +162,10 @@ class HistoricalChartCard extends StatelessWidget {
           // Chart
           SizedBox(
             height: 160,
-            child: spots.isEmpty
+            child: spots.length < 2
                 ? Center(
                     child: Text(
-                      'Sem dados',
+                      history == null ? l10n.chartError : l10n.noData,
                       style: TextStyle(color: AppColors.textSecondary),
                     ),
                   )
@@ -169,8 +187,11 @@ class HistoricalChartCard extends StatelessWidget {
                           sideTitles: SideTitles(
                             showTitles: true,
                             reservedSize: 52,
+                            interval: _calcInterval(spots),
+                            minIncluded: false,
+                            maxIncluded: false,
                             getTitlesWidget: (val, _) => Text(
-                              Formatters.currency(val),
+                              Formatters.currency(val, quote.currency),
                               style: const TextStyle(
                                   color: AppColors.textSecondary,
                                   fontSize: 9),
@@ -190,11 +211,11 @@ class HistoricalChartCard extends StatelessWidget {
                           getTooltipItems: (spots) {
                             return spots.map((s) {
                               final idx = s.x.toInt();
-                              final dateStr = idx < history.length
-                                  ? Formatters.date(history[idx].date)
+                              final dateStr = idx < points.length
+                                  ? Formatters.date(points[idx].date)
                                   : '';
                               return LineTooltipItem(
-                                '${Formatters.currency(s.y)}\n$dateStr',
+                                '${Formatters.currency(s.y, quote.currency)}\n$dateStr',
                                 const TextStyle(
                                     color: Colors.white,
                                     fontSize: 11,

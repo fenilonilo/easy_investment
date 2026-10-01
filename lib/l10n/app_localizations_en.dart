@@ -119,4 +119,196 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiAssistant => 'Finance AI';
+
+  @override
+  String get configTab => 'Settings';
+
+  @override
+  String get aiChat => 'AI Chat';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get darkModeOn => 'On (OLED)';
+
+  @override
+  String get darkModeOff => 'Off';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get privacy => 'Privacy';
+
+  @override
+  String get privacyDesc =>
+      'Your token and profile are stored securely on this device';
+
+  @override
+  String get languageName => 'English (US)';
+
+  @override
+  String get logoutAccount => 'Log out of account';
+
+  @override
+  String get logoutConfirm => 'Do you really want to log out?';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get emptyWatchlist => 'Your watchlist is empty';
+
+  @override
+  String get quoteError => 'Failed to load quote';
+
+  @override
+  String get charts => 'Charts';
+
+  @override
+  String get profileError => 'Failed to load profile.';
+
+  @override
+  String get searchAssetsHint => 'Search assets (e.g. AAPL, BTC)...';
+
+  @override
+  String get noAssetsFound => 'No assets found.';
+
+  @override
+  String get welcomeBack => 'Welcome back';
+
+  @override
+  String get loginToContinue => 'Log in to continue';
+
+  @override
+  String get noAccount => 'Don\'t have an account? ';
+
+  @override
+  String get signUp => 'Sign up';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get yourInfo => 'Your information';
+
+  @override
+  String get fullName => 'Full name';
+
+  @override
+  String get selectBirthDate => 'Select your birth date';
+
+  @override
+  String get haveAccount => 'Already have an account? ';
+
+  @override
+  String get assetAdvisor => 'Asset Advisor';
+
+  @override
+  String get liveMarketData => 'Live market data';
+
+  @override
+  String get thinking => 'Thinking…';
+
+  @override
+  String get previousChats => 'Previous chats';
+
+  @override
+  String get newChat => 'New chat';
+
+  @override
+  String get askAboutAsset => 'Ask about an asset...';
+
+  @override
+  String charLimitReached(int max) {
+    return 'Limit of $max characters reached';
+  }
+
+  @override
+  String get retryAgain => 'Try again';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get deleteChat => 'Delete chat';
+
+  @override
+  String get deleteChatTitle => 'Delete chat?';
+
+  @override
+  String get deleteChatBody =>
+      'This chat will be deleted and cannot be recovered.';
+
+  @override
+  String get deleteFailed => 'Failed to delete.';
+
+  @override
+  String get loadChatsFailed => 'Could not load your chats.';
+
+  @override
+  String get noChatsYet => 'No chats here yet.';
+
+  @override
+  String exchanges(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exchanges',
+      one: '$count exchange',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get splashTagline => 'Your investments, under control.';
+
+  @override
+  String get chartError => 'Failed to load chart';
+
+  @override
+  String get noData => 'No data';
+
+  @override
+  String get dirUp => 'Up';
+
+  @override
+  String get dirFlat => 'Flat';
+
+  @override
+  String get dirDown => 'Down';
+
+  @override
+  String get field => 'Field';
+
+  @override
+  String fieldRequired(String label) {
+    return '$label is required';
+  }
+
+  @override
+  String get emailRequired => 'Email is required';
+
+  @override
+  String get emailInvalid => 'Invalid email';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get passwordMin => 'Minimum 6 characters';
+
+  @override
+  String get chatGreeting =>
+      'Hi! I\'m your Asset Advisor. I can analyze your watchlist, fetch live quotes, dividends and news, and explain indicators. What would you like to know?';
+
+  @override
+  String get personalInfo => 'Information';
+
+  @override
+  String get watchlistHint => 'Search and select the assets you want to track.';
 }

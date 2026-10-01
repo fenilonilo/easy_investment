@@ -11,7 +11,18 @@ class SecureStorageService {
   Future<void> saveToken(String token) =>
       _storage.write(key: _tokenKey, value: token);
 
-  Future<String?> readToken() => _storage.read(key: _tokenKey);
+  /// Token ilegivel (storage corrompido) vira "sem token" e e descartado,
+  /// para o app cair no login em vez de tela branca.
+  Future<String?> readToken() async {
+    try {
+      return await _storage.read(key: _tokenKey);
+    } catch (_) {
+      try {
+        await _storage.delete(key: _tokenKey);
+      } catch (_) {}
+      return null;
+    }
+  }
 
   Future<void> clearToken() => _storage.delete(key: _tokenKey);
 

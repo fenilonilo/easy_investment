@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/api_endpoints.dart';
 import '../../data/datasources/dio_client.dart';
@@ -18,6 +19,8 @@ class ProfileState {
   final List<AssetModel> selectedAssets;
   final List<AssetModel> searchResults;
   final bool searching;
+  final String? searchError;
+  final bool loadFailed;
 
   const ProfileState({
     this.loading = true,
@@ -29,6 +32,8 @@ class ProfileState {
     this.selectedAssets = const [],
     this.searchResults = const [],
     this.searching = false,
+    this.searchError,
+    this.loadFailed = false,
   });
 
   ProfileState copyWith({
@@ -41,6 +46,8 @@ class ProfileState {
     List<AssetModel>? selectedAssets,
     List<AssetModel>? searchResults,
     bool? searching,
+    Object? searchError = _keep,
+    bool? loadFailed,
   }) =>
       ProfileState(
         loading: loading ?? this.loading,
@@ -52,7 +59,31 @@ class ProfileState {
         selectedAssets: selectedAssets ?? this.selectedAssets,
         searchResults: searchResults ?? this.searchResults,
         searching: searching ?? this.searching,
+        searchError: identical(searchError, _keep)
+            ? this.searchError
+            : searchError as String?,
+        loadFailed: loadFailed ?? this.loadFailed,
       );
+}
+
+const Object _keep = Object();
+
+// Mensagem do back (400 com detail) ou texto por status.
+String _apiError(Object e, String fallback) {
+  if (e is DioException) {
+    final data = e.response?.data;
+    final detail = data is Map ? data['detail'] : null;
+    switch (e.response?.statusCode) {
+      case 400:
+        return detail is String ? detail : 'Dados inválidos.';
+      case 404:
+        return 'Usuário não encontrado.';
+      case 422:
+        return 'Dados inválidos.';
+    }
+    if (e.response == null) return 'Sem conexão com o servidor.';
+  }
+  return fallback;
 }
 
 class ProfileNotifier extends StateNotifier<ProfileState> {
@@ -61,6 +92,11 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 
   ProfileNotifier(this._ref) : super(const ProfileState()) {
     _init();
+  }
+
+  Future<void> reload() {
+    state = state.copyWith(loading: true, loadFailed: false);
+    return _init();
   }
 
   Future<void> _init() async {
@@ -76,23 +112,28 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         selectedAssets: List.from(watchlist),
       );
     } catch (e) {
-      state = state.copyWith(loading: false, error: 'Erro ao carregar perfil.');
+      state = state.copyWith(
+          loading: false, loadFailed: true, error: 'Erro ao carregar perfil.');
     }
   }
 
   void search(String query) {
     _debounce?.cancel();
     if (query.trim().isEmpty) {
-      state = state.copyWith(searchResults: [], searching: false);
+      state = state.copyWith(
+          searchResults: [], searching: false, searchError: null);
       return;
     }
-    state = state.copyWith(searching: true);
+    state = state.copyWith(searching: true, searchError: null);
     _debounce = Timer(const Duration(milliseconds: 400), () async {
       try {
         final results = await _ref.read(assetRepositoryProvider).search(query);
         state = state.copyWith(searchResults: results, searching: false);
       } catch (_) {
-        state = state.copyWith(searchResults: [], searching: false);
+        state = state.copyWith(
+            searchResults: [],
+            searching: false,
+            searchError: 'Erro ao buscar ativos. Tente novamente.');
       }
     });
   }
@@ -112,7 +153,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   }
 
   Future<void> saveChanges() async {
-    state = state.copyWith(saving: true, error: null, successMessage: null);
+    state = state.copyWith(saving: true, error: state.error);
     try {
       final watchlistRepo = _ref.read(watchlistRepositoryProvider);
       final originalTickers =
@@ -133,20 +174,29 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 
       state = state.copyWith(
         saving: false,
+        error: state.error,
         originalWatchlist: List.from(state.selectedAssets),
-        successMessage: 'Watchlist atualizada!',
+        successMessage: (toAdd.isNotEmpty || toRemove.isNotEmpty)
+            ? 'Watchlist atualizada!'
+            : null,
       );
     } catch (e) {
-      state = state.copyWith(saving: false, error: 'Erro ao salvar.');
+      state =
+          state.copyWith(saving: false, error: _apiError(e, 'Erro ao salvar.'));
     }
   }
 
-  Future<void> updateProfile({
+  /// Retorna true so se o PUT foi enviado e salvo.
+  Future<bool> updateProfile({
     required String email,
     required String investorProfile,
   }) async {
     final user = state.user;
-    if (user == null) return;
+    if (user == null) {
+      state = state.copyWith(
+          error: 'Dados do usuário indisponíveis. Saia e entre novamente.');
+      return false;
+    }
     state = state.copyWith(saving: true, error: null);
     try {
       final dio = _ref.read(dioClientProvider);
@@ -173,8 +223,11 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         user: updated,
         successMessage: 'Perfil atualizado!',
       );
+      return true;
     } catch (e) {
-      state = state.copyWith(saving: false, error: 'Erro ao atualizar perfil.');
+      state = state.copyWith(
+          saving: false, error: _apiError(e, 'Erro ao atualizar perfil.'));
+      return false;
     }
   }
 

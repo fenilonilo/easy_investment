@@ -18,7 +18,9 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 401) {
+    // só expira sessão se a requisição levava token (401 do login = senha errada)
+    if (err.response?.statusCode == 401 &&
+        err.requestOptions.headers.containsKey('Authorization')) {
       await _storage.clearToken();
       onLogout();
     }

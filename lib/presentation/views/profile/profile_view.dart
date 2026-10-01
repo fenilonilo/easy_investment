@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -48,6 +49,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     final state = ref.watch(profileNotifierProvider);
     final notifier = ref.read(profileNotifierProvider.notifier);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     ref.listen<ProfileState>(profileNotifierProvider, (_, s) {
       if (!_initialized && s.user != null) {
@@ -73,7 +75,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
     if (state.loading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Perfil')),
+        appBar: AppBar(title: Text(l10n.profile)),
         body: const Padding(
           padding: EdgeInsets.all(16),
           child: Column(
@@ -92,12 +94,31 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       );
     }
 
+    if (state.loadFailed) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.profile)),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l10n.profileError),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: notifier.reload,
+                child: Text(l10n.retry),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final user = state.user;
     final hasDiff = _hasDiff(state);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Perfil'),
+        title: Text(l10n.profile),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout_rounded),
@@ -120,10 +141,11 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         if (!(_formKey.currentState?.validate() ?? false)) {
                           return;
                         }
-                        await notifier.updateProfile(
+                        final ok = await notifier.updateProfile(
                           email: _emailCtrl.text.trim(),
                           investorProfile: _investorProfile,
                         );
+                        if (!ok) return;
                       }
                       await notifier.saveChanges();
                     },
@@ -151,11 +173,19 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Informações',
+              l10n.personalInfo,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
+            if (user == null) ...[
+              Text(
+                'Dados do usuário indisponíveis. Saia e entre novamente.',
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 12),
+            ],
             Form(
               key: _formKey,
               child: Column(
@@ -165,8 +195,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     child: TextFormField(
                       initialValue: user?.name ?? '',
                       readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Nome',
+                      decoration: InputDecoration(
+                        labelText: l10n.name,
                         prefixIcon: Icon(Icons.person_outline),
                       ),
                     ),
@@ -177,8 +207,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     child: TextFormField(
                       initialValue: user?.birthDate ?? '',
                       readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Data de Nascimento',
+                      decoration: InputDecoration(
+                        labelText: l10n.birthDate,
                         prefixIcon: Icon(Icons.calendar_today_outlined),
                       ),
                     ),
@@ -187,10 +217,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   TextFormField(
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
-                    validator: Validators.email,
+                    validator: (v) => Validators.email(v, l10n),
                     onChanged: (_) => setState(() => _formDirty = true),
-                    decoration: const InputDecoration(
-                      labelText: 'E-mail',
+                    decoration: InputDecoration(
+                      labelText: l10n.email,
                       prefixIcon: Icon(Icons.email_outlined),
                     ),
                   ),
@@ -202,7 +232,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       initialValue: '••••••••',
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: 'Senha',
+                        labelText: l10n.password,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(_obscure
@@ -217,18 +247,18 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     value: _investorProfile,
-                    decoration: const InputDecoration(
-                      labelText: 'Perfil de Investidor',
+                    decoration: InputDecoration(
+                      labelText: l10n.investorProfile,
                       prefixIcon: Icon(Icons.show_chart_rounded),
                     ),
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                           value: 'CONSERVATIVE',
-                          child: Text('Conservador')),
+                          child: Text(l10n.conservative)),
                       DropdownMenuItem(
-                          value: 'MODERATE', child: Text('Moderado')),
+                          value: 'MODERATE', child: Text(l10n.moderate)),
                       DropdownMenuItem(
-                          value: 'AGGRESSIVE', child: Text('Agressivo')),
+                          value: 'AGGRESSIVE', child: Text(l10n.aggressive)),
                     ],
                     onChanged: (v) {
                       HapticFeedback.selectionClick();
@@ -251,7 +281,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Busque e selecione os ativos que deseja monitorar.',
+              l10n.watchlistHint,
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: AppColors.textSecondary),
             ),
@@ -274,6 +304,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             SearchResultsList(
               results: state.searchResults,
               searching: state.searching,
+              searchError: state.searchError,
+              hasQuery: _searchCtrl.text.trim().isNotEmpty,
               selectedTickers:
                   state.selectedAssets.map((a) => a.ticker).toSet(),
               onAdd: (asset) {

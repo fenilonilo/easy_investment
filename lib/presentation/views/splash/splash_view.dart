@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
@@ -80,7 +81,7 @@ class _SplashViewState extends ConsumerState<SplashView>
               ),
               const SizedBox(height: 8),
               Text(
-                'Seus investimentos, sob controle.',
+                AppLocalizations.of(context)!.splashTagline,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.5),
                   fontSize: 14,

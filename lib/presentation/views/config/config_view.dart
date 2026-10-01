@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,19 +15,20 @@ class ConfigView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeProvider) == ThemeMode.dark;
     final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Configurações')),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // ── Aparência ──────────────────────────────────────────────
-          _SectionHeader(label: 'Aparência'),
+          _SectionHeader(label: l10n.appearance),
           _SettingsTile(
             icon: Icons.dark_mode_rounded,
             iconColor: const Color(0xFF9C88FF),
-            title: 'Modo Escuro',
-            subtitle: isDark ? 'Ativo (OLED)' : 'Inativo',
+            title: l10n.darkMode,
+            subtitle: isDark ? l10n.darkModeOn : l10n.darkModeOff,
             trailing: Switch.adaptive(
               value: isDark,
               activeColor: AppColors.primary,
@@ -39,14 +41,12 @@ class ConfigView extends ConsumerWidget {
           const SizedBox(height: 8),
 
           // ── Idioma ─────────────────────────────────────────────────
-          _SectionHeader(label: 'Idioma'),
+          _SectionHeader(label: l10n.language),
           _SettingsTile(
             icon: Icons.language_rounded,
             iconColor: const Color(0xFF4FC3F7),
-            title: 'Idioma',
-            subtitle: locale.languageCode == 'pt'
-                ? 'Português (BR)'
-                : 'English (US)',
+            title: l10n.language,
+            subtitle: l10n.languageName,
             trailing: DropdownButton<String>(
               value: locale.languageCode,
               underline: const SizedBox.shrink(),
@@ -65,18 +65,18 @@ class ConfigView extends ConsumerWidget {
           const SizedBox(height: 8),
 
           // ── Sobre ──────────────────────────────────────────────────
-          _SectionHeader(label: 'Sobre'),
+          _SectionHeader(label: l10n.about),
           _SettingsTile(
             icon: Icons.info_outline_rounded,
             iconColor: AppColors.textSecondary,
-            title: 'Versão',
+            title: l10n.version,
             subtitle: '1.0.0',
           ),
           _SettingsTile(
             icon: Icons.shield_outlined,
             iconColor: AppColors.textSecondary,
-            title: 'Privacidade',
-            subtitle: 'Seus dados ficam apenas neste dispositivo',
+            title: l10n.privacy,
+            subtitle: l10n.privacyDesc,
           ),
           const SizedBox(height: 24),
 
@@ -92,28 +92,27 @@ class ConfigView extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12)),
               ),
               icon: const Icon(Icons.logout_rounded),
-              label: const Text(
-                'Sair da conta',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              label: Text(
+                l10n.logoutAccount,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               onPressed: () async {
                 HapticFeedback.mediumImpact();
                 final confirmed = await showDialog<bool>(
                   context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text('Sair'),
-                    content:
-                        const Text('Deseja realmente sair da sua conta?'),
+                  builder: (ctx) => AlertDialog(
+                    title: Text(l10n.logout),
+                    content: Text(l10n.logoutConfirm),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Cancelar'),
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text(l10n.cancel),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.pop(context, true),
+                        onPressed: () => Navigator.pop(ctx, true),
                         style: TextButton.styleFrom(
                             foregroundColor: AppColors.loss),
-                        child: const Text('Sair'),
+                        child: Text(l10n.logout),
                       ),
                     ],
                   ),

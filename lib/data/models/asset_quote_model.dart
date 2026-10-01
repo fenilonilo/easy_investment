@@ -11,6 +11,7 @@ class AssetQuoteModel with _$AssetQuoteModel {
     @JsonKey(name: 'icon_url') required String iconUrl,
     @JsonKey(name: 'price_usd') required double priceUsd,
     required String direction,
+    @Default('USD') String currency,
   }) = _AssetQuoteModel;
 
   factory AssetQuoteModel.fromJson(Map<String, dynamic> json) =>

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
@@ -9,12 +10,21 @@ class AssetCardWidget extends StatelessWidget {
   final AssetQuoteModel quote;
   final VoidCallback? onTap;
 
-  const AssetCardWidget({super.key, required this.quote, this.onTap});
+  /// Índice na ReorderableListView; quando informado, o handle inicia o drag.
+  final int? dragIndex;
+
+  const AssetCardWidget(
+      {super.key, required this.quote, this.onTap, this.dragIndex});
 
   @override
   Widget build(BuildContext context) {
-    final isUp = quote.direction.toLowerCase() == 'subindo';
-    final dirColor = isUp ? AppColors.gain : AppColors.loss;
+    final l10n = AppLocalizations.of(context)!;
+    final dir = Formatters.directionLabel(quote.direction);
+    final dirColor = dir == 'up'
+        ? AppColors.gain
+        : dir == 'flat'
+            ? AppColors.textSecondary
+            : AppColors.loss;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -101,7 +111,7 @@ class AssetCardWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  Formatters.currency(quote.priceUsd),
+                  Formatters.currency(quote.priceUsd, quote.currency),
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -111,15 +121,17 @@ class AssetCardWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isUp
+                      dir == 'up'
                           ? Icons.arrow_upward_rounded
-                          : Icons.arrow_downward_rounded,
+                          : dir == 'flat'
+                              ? Icons.remove_rounded
+                              : Icons.arrow_downward_rounded,
                       color: dirColor,
                       size: 14,
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      isUp ? 'Alta' : 'Baixa',
+                      dir == 'up' ? l10n.dirUp : dir == 'flat' ? l10n.dirFlat : l10n.dirDown,
                       style: TextStyle(
                         color: dirColor,
                         fontSize: 11,
@@ -132,11 +144,15 @@ class AssetCardWidget extends StatelessWidget {
             ),
             // Drag handle
             const SizedBox(width: 10),
-            Icon(
-              Icons.drag_handle_rounded,
-              color: AppColors.textSecondary.withOpacity(0.4),
-              size: 18,
-            ),
+            if (dragIndex != null)
+              ReorderableDragStartListener(
+                index: dragIndex!,
+                child: Icon(
+                  Icons.drag_handle_rounded,
+                  color: AppColors.textSecondary.withOpacity(0.4),
+                  size: 18,
+                ),
+              ),
           ],
         ),
       ),

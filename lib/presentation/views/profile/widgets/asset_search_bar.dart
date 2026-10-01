@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class AssetSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -16,7 +17,7 @@ class AssetSearchBar extends StatelessWidget {
       controller: controller,
       onChanged: onChanged,
       decoration: InputDecoration(
-        hintText: 'Buscar ativos (ex: AAPL, BTC)...',
+        hintText: AppLocalizations.of(context)!.searchAssetsHint,
         prefixIcon: const Icon(Icons.search_rounded),
         suffixIcon: controller.text.isNotEmpty
             ? IconButton(

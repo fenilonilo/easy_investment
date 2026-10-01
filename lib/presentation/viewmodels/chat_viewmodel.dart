@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/models/agent_event.dart';
 import '../../data/models/ai_chat_models.dart';
@@ -14,6 +15,17 @@ const String kChatGreeting =
 
 /// Limite do backend: fora de 1–4000 caracteres a API devolve 422.
 const int kChatMaxMessageLength = 4000;
+
+const String kChatLastSessionKey = 'chat_last_session_id';
+
+/// O backend persiste o contexto injetado na mensagem do usuário; some da tela.
+final _contextoInjetado = RegExp(
+  r'<additional[ _]context>[\s\S]*?(</additional[ _]context>|$)',
+  caseSensitive: false,
+);
+
+String removerContextoInjetado(String texto) =>
+    texto.replaceAll(_contextoInjetado, '').trim();
 
 class ChatMessage {
   final String text;
@@ -47,6 +59,9 @@ class ChatState {
   /// Erro da última tentativa, para exibir um aviso reenviável.
   final String? error;
 
+  /// A última mensagem enviada pode ser reenviada ("Tentar de novo").
+  final bool podeTentarDeNovo;
+
   const ChatState({
     this.messages = const [],
     this.typing = false,
@@ -54,6 +69,7 @@ class ChatState {
     this.toolLabel,
     this.sessionId,
     this.error,
+    this.podeTentarDeNovo = false,
   });
 
   ChatState copyWith({
@@ -65,6 +81,7 @@ class ChatState {
     String? error,
     bool clearToolLabel = false,
     bool clearError = false,
+    bool? podeTentarDeNovo,
   }) =>
       ChatState(
         messages: messages ?? this.messages,
@@ -73,6 +90,9 @@ class ChatState {
         toolLabel: clearToolLabel ? null : (toolLabel ?? this.toolLabel),
         sessionId: sessionId ?? this.sessionId,
         error: clearError ? null : (error ?? this.error),
+        podeTentarDeNovo: clearError
+            ? false
+            : (podeTentarDeNovo ?? this.podeTentarDeNovo),
       );
 }
 
@@ -97,7 +117,10 @@ class ChatNotifier extends StateNotifier<ChatState> {
   /// total da resposta, que pode passar de 30 s legitimamente.
   static const _semEventos = Duration(seconds: 90);
 
-  Future<void> send(String text) async {
+  String? _ultimaMensagem;
+  var _tentouRestaurar = false;
+
+  Future<void> send(String text, {bool reenvio = false}) async {
     final mensagem = text.trim();
     if (mensagem.isEmpty || state.typing) return;
 
@@ -114,8 +137,10 @@ class ChatNotifier extends StateNotifier<ChatState> {
       isUser: true,
       timestamp: DateTime.now(),
     );
+    _ultimaMensagem = mensagem;
     state = state.copyWith(
-      messages: [...state.messages, userMsg],
+      // No reenvio a bolha do usuário já está na tela.
+      messages: reenvio ? state.messages : [...state.messages, userMsg],
       typing: true,
       streamingText: '',
       clearToolLabel: true,
@@ -123,6 +148,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
     );
 
     final concluida = Completer<void>();
+    var doneVazio = false;
     // done é o ÚNICO terminador legítimo: fechar sem ele = erro fatal.
     var terminouLimpo = false;
     String? ultimoErro;
@@ -139,6 +165,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
             // Persiste já: se o app fechar no meio, a conversa não se perde.
             if (novoId.isNotEmpty) {
               state = state.copyWith(sessionId: novoId);
+              _salvarSessao(novoId);
             }
 
           case TokenEvent(:final content):
@@ -155,6 +182,12 @@ class ChatNotifier extends StateNotifier<ChatState> {
             // content traz a resposta inteira — mais confiável que a
             // concatenação dos tokens.
             final texto = content.isNotEmpty ? content : state.streamingText;
+            // done vazio (o back o manda após um error fatal) não é resposta:
+            // sem bolha vazia; onDone reporta o último error.
+            if (texto.trim().isEmpty) {
+              doneVazio = true;
+              break;
+            }
             terminouLimpo = true;
             state = state.copyWith(
               messages: [
@@ -171,7 +204,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
 
           case ErrorEvent(:final detail):
             // Pode ser parcial: o stream ainda pode terminar com done.
-            ultimoErro = detail;
+            ultimoErro = AiApiException.amigavelDeDetalhe(detail);
         }
       },
       onError: (Object e) {
@@ -190,7 +223,12 @@ class ChatNotifier extends StateNotifier<ChatState> {
           if (watchlistMudou) _invalidarWatchlist();
         } else {
           // Fechou sem done: o último error era fatal.
-          _finalizar(erro: ultimoErro ?? 'A resposta foi interrompida.');
+          _finalizar(
+            erro: ultimoErro ??
+                (doneVazio
+                    ? 'O assistente não devolveu resposta. Tente de novo.'
+                    : 'A resposta foi interrompida.'),
+          );
         }
         if (!concluida.isCompleted) concluida.complete();
       },
@@ -219,6 +257,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
       clearToolLabel: true,
       error: erro,
       clearError: erro == null,
+      podeTentarDeNovo: erro != null && _ultimaMensagem != null,
     );
   }
 
@@ -229,6 +268,46 @@ class ChatNotifier extends StateNotifier<ChatState> {
     } catch (_) {
       // Home ainda não montada: nada a invalidar.
     }
+  }
+
+  /// Reenvia a última mensagem após uma falha, sem duplicar a bolha.
+  Future<void> tentarDeNovo() {
+    final m = _ultimaMensagem;
+    if (m == null) return Future.value();
+    return send(m, reenvio: true);
+  }
+
+  /// Persiste a conversa atual para reabri-la após recarregar o app.
+  Future<void> _salvarSessao(String? id) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (id == null) {
+        await prefs.remove(kChatLastSessionKey);
+      } else {
+        await prefs.setString(kChatLastSessionKey, id);
+      }
+    } catch (_) {
+      // Sem storage: só não restaura depois.
+    }
+  }
+
+  /// Reabre a última conversa salva. Chamar uma vez ao abrir a aba; não faz
+  /// nada se já há conversa em andamento ou se a sessão salva sumiu.
+  Future<void> restaurarUltima() async {
+    if (_tentouRestaurar) return;
+    _tentouRestaurar = true;
+    String? id;
+    try {
+      id = (await SharedPreferences.getInstance())
+          .getString(kChatLastSessionKey);
+    } catch (_) {
+      return;
+    }
+    if (id == null || !mounted) return;
+    if (state.sessionId != null || state.typing || state.messages.length > 1) {
+      return;
+    }
+    await abrirConversa(id, restaurando: true);
   }
 
   /// Interrompe a resposta atual sem perder o que já chegou.
@@ -243,31 +322,46 @@ class ChatNotifier extends StateNotifier<ChatState> {
   void clear() {
     _sub?.cancel();
     _sub = null;
+    _ultimaMensagem = null;
     state = const ChatState();
+    _salvarSessao(null);
   }
 
   Future<List<AiSessionInfo>> listarConversas({int limit = 50}) =>
       _ref.read(chatRepositoryProvider).listSessions(limit: limit);
 
   /// Abre uma conversa existente e carrega o histórico dela na tela.
-  Future<void> abrirConversa(String sessionId) async {
+  Future<void> abrirConversa(String sessionId,
+      {bool restaurando = false}) async {
     _sub?.cancel();
     _sub = null;
     state = ChatState(sessionId: sessionId, typing: true);
     try {
       final historico =
           await _ref.read(chatRepositoryProvider).loadHistory(sessionId);
+      if (!mounted) return;
       state = ChatState(
         sessionId: sessionId,
         messages: historico
             .map((m) => ChatMessage(
-                  text: m.content,
+                  text: m.ehDoUsuario
+                      ? removerContextoInjetado(m.content)
+                      : m.content,
                   isUser: m.ehDoUsuario,
                   timestamp: m.createdAt ?? DateTime.now(),
                 ))
+            .where((m) => m.text.isNotEmpty)
             .toList(),
       );
+      _salvarSessao(sessionId);
     } catch (e) {
+      if (!mounted) return;
+      if (restaurando) {
+        // Sessão salva não existe mais: volta à tela inicial, sem erro.
+        _salvarSessao(null);
+        state = const ChatState();
+        return;
+      }
       state = ChatState(
         sessionId: sessionId,
         error: e is AiApiException
