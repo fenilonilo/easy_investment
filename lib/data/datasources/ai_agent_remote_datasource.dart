@@ -13,7 +13,14 @@ import 'dio_client.dart';
 class AiAgentRemoteDataSource {
   final Dio _dio;
 
-  AiAgentRemoteDataSource(this._dio);
+  /// [semResposta] é o prazo para o servidor devolver os headers do stream.
+  /// Injetável para teste. Deve ser MENOR que o `.timeout` do ChatNotifier
+  /// (90 s): se os dois disparassem juntos, o notifier cancelaria a
+  /// subscription antes de o erro do async* ser entregue e a exceção vazaria.
+  AiAgentRemoteDataSource(this._dio,
+      {this.semResposta = const Duration(seconds: 85)});
+
+  final Duration semResposta;
 
   /// O agente encadeia ferramentas: 30 s+ é normal na rota não-streaming.
   static const _chatTimeout = Duration(seconds: 120);
@@ -43,9 +50,15 @@ class AiAgentRemoteDataSource {
     String? sessionId,
   }) async* {
     final Response<ResponseBody> response;
+    // Com connect/receiveTimeout = zero o dio nunca desiste: o prazo vale aqui,
+    // via Future.timeout + cancel do request (o .timeout do chamador só atua
+    // depois que o stream existe).
+    final cancel = CancelToken();
     try {
-      response = await _dio.post<ResponseBody>(
+      response = await _dio
+          .post<ResponseBody>(
         ApiEndpoints.aiChatStream,
+        cancelToken: cancel,
         data: _chatBody(message, sessionId),
         options: Options(
           responseType: ResponseType.stream,
@@ -62,7 +75,11 @@ class AiAgentRemoteDataSource {
           connectTimeout: Duration.zero,
           receiveTimeout: Duration.zero,
         ),
-      );
+      )
+          .timeout(semResposta, onTimeout: () {
+        cancel.cancel('timeout');
+        throw TimeoutException('Sem resposta do assistente', semResposta);
+      });
     } on DioException catch (e) {
       throw await _toApiException(e);
     }

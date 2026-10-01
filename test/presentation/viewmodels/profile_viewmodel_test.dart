@@ -193,7 +193,7 @@ void main() {
       await container.read(profileNotifierProvider.notifier).saveChanges();
 
       final state = container.read(profileNotifierProvider);
-      expect(state.successMessage, 'Watchlist atualizada!');
+      expect(state.successMessage, isNull);
       verifyNever(() => mockWatchlist.addAssets(any()));
       verifyNever(() => mockWatchlist.removeAssets(any()));
     });

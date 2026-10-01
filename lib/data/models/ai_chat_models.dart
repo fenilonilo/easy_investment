@@ -184,9 +184,35 @@ class AiApiException implements Exception {
         401 => 'Sua sessão expirou. Entre novamente.',
         404 => 'Conversa não encontrada.',
         422 => 'Mensagem inválida: $message',
-        502 => 'O assistente está indisponível. Tente em alguns instantes.',
-        _ => message,
+        429 => 'O assistente atingiu o limite de uso. Aguarde um instante.',
+        500 => 'O assistente teve um problema. Tente de novo.',
+        502 ||
+        503 =>
+          'O assistente está indisponível. Tente em alguns instantes.',
+        _ => AiApiException.amigavelDeDetalhe(message),
       };
+
+  /// `detail` do SSE/HTTP pode ser JSON cru do provedor (Gemini). Extrai a
+  /// mensagem útil e traduz limite de uso/indisponibilidade.
+  static String amigavelDeDetalhe(String detail) {
+    final d = detail.toLowerCase();
+    if (d.contains('429') ||
+        d.contains('quota') ||
+        d.contains('resource_exhausted')) {
+      return 'O assistente atingiu o limite de uso. Aguarde um instante e '
+          'tente de novo.';
+    }
+    if (d.contains('503') ||
+        d.contains('unavailable') ||
+        d.contains('overloaded')) {
+      return 'O assistente está indisponível. Tente em alguns instantes.';
+    }
+    final t = detail.trim();
+    if (t.startsWith('{') || t.startsWith('[') || t.startsWith('<')) {
+      return 'O assistente não conseguiu responder. Tente de novo.';
+    }
+    return detail;
+  }
 
   @override
   String toString() => 'AiApiException($statusCode): $message';

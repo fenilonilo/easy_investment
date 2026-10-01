@@ -4,16 +4,19 @@ import 'package:mocktail/mocktail.dart';
 import 'package:easy_finance/presentation/viewmodels/auth_viewmodel.dart';
 import 'package:easy_finance/data/repositories/auth_repository_impl.dart';
 import 'package:easy_finance/data/datasources/secure_storage_service.dart';
+import 'package:easy_finance/data/datasources/user_storage_service.dart';
 import 'package:easy_finance/data/models/auth_token_model.dart';
 import 'package:easy_finance/domain/repositories/auth_repository.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockSecureStorageService extends Mock implements SecureStorageService {}
+class MockUserStorageService extends Mock implements UserStorageService {}
 
 void main() {
   late MockAuthRepository mockAuthRepo;
   late MockSecureStorageService mockStorage;
+  final mockUserStorage = MockUserStorageService();
 
   setUpAll(() {
     registerFallbackValue(const AuthTokenModel(accessToken: '', tokenType: ''));
@@ -29,6 +32,7 @@ void main() {
       overrides: [
         authRepositoryProvider.overrideWithValue(mockAuthRepo),
         secureStorageServiceProvider.overrideWithValue(mockStorage),
+        userStorageServiceProvider.overrideWithValue(mockUserStorage),
       ],
     );
     addTearDown(container.dispose);
@@ -140,6 +144,7 @@ void main() {
       );
       when(() => mockStorage.saveToken(any())).thenAnswer((_) async {});
       when(() => mockStorage.clearToken()).thenAnswer((_) async {});
+      when(() => mockUserStorage.clear()).thenAnswer((_) async {});
 
       await container.read(authNotifierProvider.notifier).login('user@test.com', 'pass123');
       expect(container.read(authNotifierProvider).status, AuthStatus.success);

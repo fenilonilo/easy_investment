@@ -14,6 +14,7 @@ _$AssetQuoteModelImpl _$$AssetQuoteModelImplFromJson(
   iconUrl: json['icon_url'] as String,
   priceUsd: (json['price_usd'] as num).toDouble(),
   direction: json['direction'] as String,
+  currency: json['currency'] as String? ?? 'USD',
 );
 
 Map<String, dynamic> _$$AssetQuoteModelImplToJson(
@@ -24,4 +25,5 @@ Map<String, dynamic> _$$AssetQuoteModelImplToJson(
   'icon_url': instance.iconUrl,
   'price_usd': instance.priceUsd,
   'direction': instance.direction,
+  'currency': instance.currency,
 };
